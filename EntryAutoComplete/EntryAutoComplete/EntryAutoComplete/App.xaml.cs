@@ -1,4 +1,4 @@
-﻿using System;
+﻿using EntryAutoComplete.Views;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
