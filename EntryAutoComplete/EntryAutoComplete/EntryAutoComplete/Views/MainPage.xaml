@@ -1,13 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:customControl="clr-namespace:EntryAutoComplete.CustomControl;assembly=EntryAutoComplete"
+             xmlns:viewModels="clr-namespace:EntryAutoComplete.ViewModels;assembly=EntryAutoComplete"
              x:Class="EntryAutoComplete.Views.MainPage">
 
-    <StackLayout>
+    <ContentPage.BindingContext>
+        <viewModels:MainPageViewModel/>
+    </ContentPage.BindingContext>
+
+    <StackLayout VerticalOptions="Center">
         <!-- Place new controls here -->
-        <Label Text="Welcome to Xamarin.Forms!" 
-           HorizontalOptions="Center"
-           VerticalOptions="CenterAndExpand" />
+        <customControl:EntryAutoComplete Placeholder="Enter text..."  ItemsSource="{Binding Countries}" MinimumPrefixCharacter="2"/>
     </StackLayout>
 
 </ContentPage>

@@ -28,45 +28,72 @@ namespace EntryAutoComplete.CustomControl
 
         public string SearchText
         {
-            get { return (string)GetValue(SearchTextProperty); }
+            get { return (string) GetValue(SearchTextProperty); }
 
             set { SetValue(SearchTextProperty, value); }
         }
 
         public Color SearchTextColor
         {
-            get { return (Color)GetValue(SearchTextColorProperty); }
+            get { return (Color) GetValue(SearchTextColorProperty); }
             set { SetValue(SearchTextColorProperty, value); }
         }
 
         public int MaximumVisibleElements
         {
-            get { return (int)GetValue(MaximumVisibleElementsProperty); }
+            get { return (int) GetValue(MaximumVisibleElementsProperty); }
             set { SetValue(MaximumVisibleElementsProperty, value); }
         }
 
         public int MinimumPrefixCharacter
         {
-            get { return (int)GetValue(MinimumPrefixCharacterProperty); }
+            get { return (int) GetValue(MinimumPrefixCharacterProperty); }
             set { SetValue(MinimumPrefixCharacterProperty, value); }
         }
 
         public IEnumerable ItemsSource
         {
-            get { return (IEnumerable)GetValue(ItemsSourceProperty); }
+            get { return (IEnumerable) GetValue(ItemsSourceProperty); }
             set { SetValue(ItemsSourceProperty, value); }
         }
 
         public string Placeholder
         {
-            get { return (string)GetValue(PlaceholderProperty); }
+            get { return (string) GetValue(PlaceholderProperty); }
             set { SetValue(PlaceholderProperty, value); }
         }
 
         public Color PlaceholderColor
         {
-            get { return (Color)GetValue(PlaceholderColorProperty); }
+            get { return (Color) GetValue(PlaceholderColorProperty); }
             set { SetValue(PlaceholderColorProperty, value); }
+        }
+
+        private ScrollView _suggestionWrapper { get; }
+        private ListView _suggestionsListView { get; }
+        private Grid _container { get; }
+
+        public EntryAutoComplete()
+        {
+            _container = new Grid();
+            _suggestionsListView = new ListView();
+            _suggestionWrapper = new ScrollView();
+
+            // init Grid Layout
+            _container.RowDefinitions.Add(new RowDefinition {Height = GridLength.Star});
+            _container.HeightRequest = 50;
+
+            // init Suggestions ListView
+            _suggestionsListView.BackgroundColor = Color.White;
+            _suggestionsListView.VerticalOptions = LayoutOptions.End;
+
+            // ScrollView for ListView
+            _suggestionWrapper.VerticalOptions = LayoutOptions.Fill;
+            _suggestionWrapper.Orientation = ScrollOrientation.Vertical;
+            _suggestionWrapper.BackgroundColor = Color.White;
+            _suggestionWrapper.Content = _suggestionsListView;
+
+            _container.Children.Add(_suggestionWrapper);
         }
     }
 }
