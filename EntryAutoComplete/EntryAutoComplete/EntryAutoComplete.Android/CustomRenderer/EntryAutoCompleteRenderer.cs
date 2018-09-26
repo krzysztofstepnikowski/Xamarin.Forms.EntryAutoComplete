@@ -21,11 +21,12 @@ namespace EntryAutoComplete.Droid.CustomRenderer
             if (e.NewElement != null)
             {
 
-                var control = new AutoCompleteTextView(context: Forms.Context);
+                var control = new AutoCompleteTextView(Forms.Context);
 
                 if (!string.IsNullOrEmpty(e.NewElement.Placeholder))
                 {
                     control.Hint = e.NewElement.Placeholder;
+                    control.SetHintTextColor(e.NewElement.PlaceholderColor.ToAndroid());
                     SetNativeControl(control);
                 }
 
