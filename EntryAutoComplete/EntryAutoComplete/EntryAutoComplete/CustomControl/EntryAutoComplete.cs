@@ -1,15 +1,23 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using System.Linq;
 using Xamarin.Forms;
 
 namespace EntryAutoComplete.CustomControl
 {
-    public class EntryAutoComplete : View
+    public class EntryAutoComplete : ContentView
     {
         public static readonly BindableProperty SearchTextProperty = BindableProperty.Create(nameof(SearchText),
             typeof(string), typeof(EntryAutoComplete), null, BindingMode.TwoWay);
 
-        public static readonly BindableProperty SearchTextColorProperty =
-            BindableProperty.Create<EntryAutoComplete, Color>(p => p.SearchTextColor, Color.Black);
+        public static readonly BindableProperty SearchTextColorProperty = BindableProperty.Create(nameof(SearchTextColor), typeof(Color), typeof(EntryAutoComplete), Color.Black,
+            BindingMode.OneWay, null, OnSearchTextColorChanged);
+
+        private static void OnSearchTextColorChanged(BindableObject bindable, object oldvalue, object newvalue)
+        {
+            var entryAutoComplete = bindable as EntryAutoComplete;
+            entryAutoComplete.SearchEntry.TextColor = (Color) newvalue;
+        }
 
         public static readonly BindableProperty MaximumVisibleElementsProperty =
             BindableProperty.Create(nameof(MaximumVisibleElements), typeof(int), typeof(EntryAutoComplete), 4);
@@ -18,13 +26,55 @@ namespace EntryAutoComplete.CustomControl
             BindableProperty.Create(nameof(MinimumPrefixCharacter), typeof(int), typeof(EntryAutoComplete), 2);
 
         public static readonly BindableProperty PlaceholderProperty =
-            BindableProperty.Create(nameof(Placeholder), typeof(string), typeof(EntryAutoComplete));
+            BindableProperty.Create(nameof(Placeholder), typeof(string), typeof(EntryAutoComplete), null,
+                BindingMode.OneWay, null, OnPlaceholderChanged);
+
 
         public static readonly BindableProperty PlaceholderColorProperty =
-            BindableProperty.Create<EntryAutoComplete, Color>(p => p.PlaceholderColor, Color.DarkGray);
+            BindableProperty.Create(nameof(PlaceholderColor), typeof(Color), typeof(EntryAutoComplete), Color.DarkGray,
+                BindingMode.OneWay, null, OnPlaceholderColorChanged);
+
+        private static void OnPlaceholderColorChanged(BindableObject bindable, object oldvalue, object newvalue)
+        {
+            var entryAutoComplete = bindable as EntryAutoComplete;
+            entryAutoComplete.SearchEntry.PlaceholderColor = (Color) newvalue;
+        }
 
         public static readonly BindableProperty ItemsSourceProperty = BindableProperty.Create(nameof(ItemsSource),
-            typeof(IEnumerable), typeof(EntryAutoComplete));
+            typeof(IEnumerable), typeof(EntryAutoComplete),null,BindingMode.OneWay,null,OnItemsSourceChanged);
+
+        private static void OnItemsSourceChanged(BindableObject bindable, object oldvalue, object newvalue)
+        {
+            var entryAutoComplete = bindable as EntryAutoComplete;
+
+            var itemsSource = (IEnumerable) newvalue;
+            entryAutoComplete.ItemsSource = itemsSource;
+            itemsSource = entryAutoComplete.FilterSuggestions(itemsSource, entryAutoComplete.SearchText);
+            entryAutoComplete.SuggestionsListView.ItemsSource = itemsSource;
+
+        }
+
+        private IEnumerable FilterSuggestions(IEnumerable itemsSource, string searchText)
+        {
+            if (string.IsNullOrEmpty(searchText))
+            {
+                return itemsSource;
+            }
+
+            else
+            {
+                itemsSource = itemsSource.Cast<object>().Where(x =>
+                    x.ToString().Equals(searchText) || x.ToString().ToLower().Contains(searchText.ToLower()));
+            }
+
+            return itemsSource;
+        }
+
+        private static void OnPlaceholderChanged(BindableObject bindable, object oldValue, object newValue)
+        {
+            var entryAutoComplete = bindable as EntryAutoComplete;
+            entryAutoComplete.SearchEntry.Placeholder = newValue?.ToString();
+        }
 
         public string SearchText
         {
@@ -69,31 +119,43 @@ namespace EntryAutoComplete.CustomControl
             set { SetValue(PlaceholderColorProperty, value); }
         }
 
-        private ScrollView _suggestionWrapper { get; }
-        private ListView _suggestionsListView { get; }
         private Grid _container { get; }
+        private ScrollView _suggestionWrapper { get; }
+        public ListView SuggestionsListView { get; }
+        public Entry SearchEntry { get; set; }
 
         public EntryAutoComplete()
         {
             _container = new Grid();
-            _suggestionsListView = new ListView();
+            SearchEntry = new Entry();
+            SuggestionsListView = new ListView();
             _suggestionWrapper = new ScrollView();
 
             // init Grid Layout
-            _container.RowDefinitions.Add(new RowDefinition {Height = GridLength.Star});
-            _container.HeightRequest = 50;
+            _container.RowSpacing = 0;
+            _container.ColumnDefinitions.Add(new ColumnDefinition() {Width = GridLength.Star});
+            _container.RowDefinitions.Add(new RowDefinition() {Height = GridLength.Star});
+            _container.RowDefinitions.Add(new RowDefinition() {Height = 50});
+
+
+            //Init Search Entry
+            SearchEntry.HorizontalOptions = LayoutOptions.Fill;
+            SearchEntry.VerticalOptions = LayoutOptions.Fill;
 
             // init Suggestions ListView
-            _suggestionsListView.BackgroundColor = Color.White;
-            _suggestionsListView.VerticalOptions = LayoutOptions.End;
+            SuggestionsListView.BackgroundColor = Color.White;
+            SuggestionsListView.VerticalOptions = LayoutOptions.End;
 
             // ScrollView for ListView
             _suggestionWrapper.VerticalOptions = LayoutOptions.Fill;
             _suggestionWrapper.Orientation = ScrollOrientation.Vertical;
             _suggestionWrapper.BackgroundColor = Color.White;
-            _suggestionWrapper.Content = _suggestionsListView;
+            _suggestionWrapper.Content = SuggestionsListView;
 
             _container.Children.Add(_suggestionWrapper);
+            _container.Children.Add(SearchEntry, 0, 1);
+
+            Content = _container;
         }
     }
 }
