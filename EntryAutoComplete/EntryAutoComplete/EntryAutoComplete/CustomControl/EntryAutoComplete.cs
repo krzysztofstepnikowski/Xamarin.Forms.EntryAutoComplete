@@ -13,14 +13,14 @@ namespace EntryAutoComplete.CustomControl
         {
             var autoCompleteView = bindable as EntryAutoComplete;
 
-            var suggestions = autoCompleteView.ItemsSource;
             if (newvalue != null)
             {
-                autoCompleteView.SearchEntry.Text = (string) newvalue;
-                suggestions = autoCompleteView.FilterSuggestions(suggestions, autoCompleteView.SearchEntry.Text);
+                autoCompleteView.SearchText = (string) newvalue;
+                autoCompleteView.SearchEntry.Text = autoCompleteView.SearchText;
+                autoCompleteView.ItemsSource = autoCompleteView.FilterSuggestions(autoCompleteView.ItemsSource, autoCompleteView.SearchEntry.Text);
             }
 
-            autoCompleteView.SuggestionsListView.ItemsSource = suggestions;
+            autoCompleteView.SuggestionsListView.ItemsSource = autoCompleteView.ItemsSource;
         }
 
         public static readonly BindableProperty SearchTextColorProperty = BindableProperty.Create(nameof(SearchTextColor), typeof(Color), typeof(EntryAutoComplete), Color.Black,
@@ -54,18 +54,9 @@ namespace EntryAutoComplete.CustomControl
         }
 
         public static readonly BindableProperty ItemsSourceProperty = BindableProperty.Create(nameof(ItemsSource),
-            typeof(IEnumerable), typeof(EntryAutoComplete),null,BindingMode.OneWay,null,OnItemsSourceChanged);
+            typeof(IEnumerable), typeof(EntryAutoComplete));
 
-        private static void OnItemsSourceChanged(BindableObject bindable, object oldvalue, object newvalue)
-        {
-            var entryAutoComplete = bindable as EntryAutoComplete;
-
-            var itemsSource = (IEnumerable) newvalue;
-            entryAutoComplete.ItemsSource = itemsSource;
-            itemsSource = entryAutoComplete.FilterSuggestions(itemsSource, entryAutoComplete.SearchText);
-            entryAutoComplete.SuggestionsListView.ItemsSource = itemsSource;
-
-        }
+ 
 
         private IEnumerable FilterSuggestions(IEnumerable itemsSource, string searchText)
         {
