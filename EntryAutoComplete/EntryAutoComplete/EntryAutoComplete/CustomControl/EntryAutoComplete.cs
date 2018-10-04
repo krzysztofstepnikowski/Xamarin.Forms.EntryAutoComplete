@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Xamarin.Forms;
 
@@ -12,15 +13,9 @@ namespace EntryAutoComplete.CustomControl
         private static void OnSearchTextChanged(BindableObject bindable, object oldvalue, object newvalue)
         {
             var autoCompleteView = bindable as EntryAutoComplete;
-
-            if (newvalue != null)
-            {
-                autoCompleteView.SearchText = (string) newvalue;
-                autoCompleteView.SearchEntry.Text = autoCompleteView.SearchText;
-                autoCompleteView.ItemsSource = autoCompleteView.FilterSuggestions(autoCompleteView.ItemsSource, autoCompleteView.SearchEntry.Text);
-            }
-
+            autoCompleteView.SearchText = (string)newvalue;
             autoCompleteView.SuggestionsListView.ItemsSource = autoCompleteView.ItemsSource;
+            autoCompleteView._originSuggestions = autoCompleteView.ItemsSource;
         }
 
         public static readonly BindableProperty SearchTextColorProperty = BindableProperty.Create(nameof(SearchTextColor), typeof(Color), typeof(EntryAutoComplete), Color.Black,
@@ -60,6 +55,8 @@ namespace EntryAutoComplete.CustomControl
 
         private IEnumerable FilterSuggestions(IEnumerable itemsSource, string searchText)
         {
+            var suggestions = itemsSource.Cast<object>();
+
             if (string.IsNullOrEmpty(searchText))
             {
                 return itemsSource;
@@ -67,11 +64,11 @@ namespace EntryAutoComplete.CustomControl
 
             else
             {
-                itemsSource = itemsSource.Cast<object>().Where(x =>
+                suggestions = itemsSource.Cast<object>().Where(x =>
                     x.ToString().Equals(searchText) || x.ToString().ToLower().Contains(searchText.ToLower()));
             }
 
-            return itemsSource;
+            return suggestions;
         }
 
         private static void OnPlaceholderChanged(BindableObject bindable, object oldValue, object newValue)
@@ -127,6 +124,7 @@ namespace EntryAutoComplete.CustomControl
         private ScrollView _suggestionWrapper { get; }
         private ListView SuggestionsListView { get; }
         private Entry SearchEntry { get; set; }
+        private IEnumerable _originSuggestions { get; set; }
 
         public EntryAutoComplete()
         {
@@ -145,6 +143,7 @@ namespace EntryAutoComplete.CustomControl
             //Init Search Entry
             SearchEntry.HorizontalOptions = LayoutOptions.Fill;
             SearchEntry.VerticalOptions = LayoutOptions.Fill;
+            SearchEntry.TextChanged += SearchEntry_TextChanged;
 
             // init Suggestions ListView
             SuggestionsListView.BackgroundColor = Color.White;
@@ -160,6 +159,13 @@ namespace EntryAutoComplete.CustomControl
             _container.Children.Add(SearchEntry, 0, 1);
 
             Content = _container;
+        }
+
+        private void SearchEntry_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            SuggestionsListView.ItemsSource = _originSuggestions;
+            var suggestions = FilterSuggestions(SuggestionsListView.ItemsSource, e.NewTextValue);
+            SuggestionsListView.ItemsSource = suggestions;
         }
     }
 }
