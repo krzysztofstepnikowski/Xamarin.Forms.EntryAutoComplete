@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Linq;
 using Xamarin.Forms;
 
@@ -8,7 +7,21 @@ namespace EntryAutoComplete.CustomControl
     public class EntryAutoComplete : ContentView
     {
         public static readonly BindableProperty SearchTextProperty = BindableProperty.Create(nameof(SearchText),
-            typeof(string), typeof(EntryAutoComplete), null, BindingMode.TwoWay);
+            typeof(string), typeof(EntryAutoComplete), null, BindingMode.TwoWay, null, OnSearchTextChanged);
+
+        private static void OnSearchTextChanged(BindableObject bindable, object oldvalue, object newvalue)
+        {
+            var autoCompleteView = bindable as EntryAutoComplete;
+
+            var suggestions = autoCompleteView.ItemsSource;
+            if (newvalue != null)
+            {
+                autoCompleteView.SearchEntry.Text = (string) newvalue;
+                suggestions = autoCompleteView.FilterSuggestions(suggestions, autoCompleteView.SearchEntry.Text);
+            }
+
+            autoCompleteView.SuggestionsListView.ItemsSource = suggestions;
+        }
 
         public static readonly BindableProperty SearchTextColorProperty = BindableProperty.Create(nameof(SearchTextColor), typeof(Color), typeof(EntryAutoComplete), Color.Black,
             BindingMode.OneWay, null, OnSearchTextColorChanged);
@@ -121,8 +134,8 @@ namespace EntryAutoComplete.CustomControl
 
         private Grid _container { get; }
         private ScrollView _suggestionWrapper { get; }
-        public ListView SuggestionsListView { get; }
-        public Entry SearchEntry { get; set; }
+        private ListView SuggestionsListView { get; }
+        private Entry SearchEntry { get; set; }
 
         public EntryAutoComplete()
         {

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using EntryAutoComplete.Annotations;
 
@@ -7,6 +8,19 @@ namespace EntryAutoComplete.ViewModels
 {
     public class MainPageViewModel : INotifyPropertyChanged
     {
+        private string _searchCountry = string.Empty;
+
+        public string SearchCountry
+        {
+            get { return _searchCountry; }
+            set
+            {
+                _searchCountry = value;
+                OnPropertyChanged();
+                FilterCountries();
+            }
+        }
+
         private List<string> _countries;
 
         public List<string> Countries
@@ -15,7 +29,19 @@ namespace EntryAutoComplete.ViewModels
             set
             {
                 _countries = value;
-                OnPropertyChanged(nameof(Countries));
+                OnPropertyChanged();
+            }
+        }
+
+        private List<string> _countriesFilter;
+
+        public List<string> CountriesFilter
+        {
+            get { return _countriesFilter; }
+            set
+            {
+                _countriesFilter = value; 
+                OnPropertyChanged();
             }
         }
 
@@ -99,6 +125,27 @@ namespace EntryAutoComplete.ViewModels
                 "USA",
                 "Wales"
             };
+
+            CountriesFilter = new List<string>(Countries);
+        }
+
+        private void FilterCountries()
+        {
+            if (Countries != null)
+            {
+                if (string.IsNullOrEmpty(_searchCountry))
+                {
+                    CountriesFilter = new List<string>(Countries);
+                }
+
+                else
+                {
+                    var filterCountries = Countries.Where(x =>
+                        x.ToLower().Equals(_searchCountry.ToLower()) || x.ToLower().Contains(_searchCountry.ToLower()));
+
+                    CountriesFilter = new List<string>(filterCountries);
+                } 
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

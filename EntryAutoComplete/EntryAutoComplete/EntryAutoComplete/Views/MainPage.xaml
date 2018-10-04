@@ -12,7 +12,7 @@
 
     <StackLayout VerticalOptions="Center">
         <!-- Place new controls here -->
-        <customControl:EntryAutoComplete Placeholder="Enter country..." ItemsSource="{Binding Countries}"/>
+        <customControl:EntryAutoComplete Placeholder="Enter country..." ItemsSource="{Binding CountriesFilter}" SearchText="Belgium"/>
     </StackLayout>
 
 </ContentPage>
