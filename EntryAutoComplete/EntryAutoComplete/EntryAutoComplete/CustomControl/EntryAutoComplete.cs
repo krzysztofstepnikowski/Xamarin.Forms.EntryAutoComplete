@@ -120,24 +120,24 @@ namespace EntryAutoComplete.CustomControl
             set { SetValue(PlaceholderColorProperty, value); }
         }
 
-        private Grid _container { get; }
-        private ScrollView _suggestionWrapper { get; }
+        private Grid Container { get; }
+        private ScrollView SuggestionWrapper { get; }
         private ListView SuggestionsListView { get; }
         private Entry SearchEntry { get; set; }
         private IEnumerable _originSuggestions { get; set; }
 
         public EntryAutoComplete()
         {
-            _container = new Grid();
+            Container = new Grid();
             SearchEntry = new Entry();
             SuggestionsListView = new ListView();
-            _suggestionWrapper = new ScrollView();
+            SuggestionWrapper = new ScrollView();
 
             // init Grid Layout
-            _container.RowSpacing = 0;
-            _container.ColumnDefinitions.Add(new ColumnDefinition() {Width = GridLength.Star});
-            _container.RowDefinitions.Add(new RowDefinition() {Height = GridLength.Star});
-            _container.RowDefinitions.Add(new RowDefinition() {Height = 50});
+            Container.RowSpacing = 0;
+            Container.ColumnDefinitions.Add(new ColumnDefinition() {Width = GridLength.Star});
+            Container.RowDefinitions.Add(new RowDefinition() {Height = GridLength.Star});
+            Container.RowDefinitions.Add(new RowDefinition() {Height = 50});
 
 
             //Init Search Entry
@@ -150,22 +150,33 @@ namespace EntryAutoComplete.CustomControl
             SuggestionsListView.VerticalOptions = LayoutOptions.End;
 
             // ScrollView for ListView
-            _suggestionWrapper.VerticalOptions = LayoutOptions.Fill;
-            _suggestionWrapper.Orientation = ScrollOrientation.Vertical;
-            _suggestionWrapper.BackgroundColor = Color.White;
-            _suggestionWrapper.Content = SuggestionsListView;
+            SuggestionWrapper.VerticalOptions = LayoutOptions.Fill;
+            SuggestionWrapper.Orientation = ScrollOrientation.Vertical;
+            SuggestionWrapper.BackgroundColor = Color.White;
+            SuggestionWrapper.Content = SuggestionsListView;
+            SuggestionWrapper.IsVisible = false;
 
-            _container.Children.Add(_suggestionWrapper);
-            _container.Children.Add(SearchEntry, 0, 1);
+            Container.Children.Add(SuggestionWrapper);
+            Container.Children.Add(SearchEntry, 0, 1);
 
-            Content = _container;
+            Content = Container;
         }
 
         private void SearchEntry_TextChanged(object sender, TextChangedEventArgs e)
         {
             SuggestionsListView.ItemsSource = _originSuggestions;
-            var suggestions = FilterSuggestions(SuggestionsListView.ItemsSource, e.NewTextValue);
-            SuggestionsListView.ItemsSource = suggestions;
+
+            if (e.NewTextValue.Length >= MinimumPrefixCharacter)
+            {
+                var suggestions = FilterSuggestions(SuggestionsListView.ItemsSource, e.NewTextValue);
+                SuggestionsListView.ItemsSource = suggestions;
+                SuggestionWrapper.IsVisible = e.NewTextValue.Length!=0 && e.NewTextValue.Length >= MinimumPrefixCharacter;
+            }
+
+            else
+            {
+                SuggestionWrapper.IsVisible = false;
+            }
         }
     }
 }
