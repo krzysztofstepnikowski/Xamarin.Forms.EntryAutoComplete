@@ -31,7 +31,7 @@ namespace EntryAutoComplete.CustomControl
             BindableProperty.Create(nameof(MaximumVisibleElements), typeof(int), typeof(EntryAutoComplete), 4);
 
         public static readonly BindableProperty MinimumPrefixCharacterProperty =
-            BindableProperty.Create(nameof(MinimumPrefixCharacter), typeof(int), typeof(EntryAutoComplete), 2);
+            BindableProperty.Create(nameof(MinimumPrefixCharacter), typeof(int), typeof(EntryAutoComplete), 1);
 
         public static readonly BindableProperty PlaceholderProperty =
             BindableProperty.Create(nameof(Placeholder), typeof(string), typeof(EntryAutoComplete), null,
