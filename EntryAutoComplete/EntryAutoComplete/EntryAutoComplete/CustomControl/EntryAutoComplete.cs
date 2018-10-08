@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using System.Linq;
 using Xamarin.Forms;
 
@@ -8,34 +6,39 @@ namespace EntryAutoComplete.CustomControl
 {
     public class EntryAutoComplete : ContentView
     {
-        public static readonly BindableProperty SearchTextProperty = 
-            BindableProperty.Create(nameof(SearchText), typeof(string), typeof(EntryAutoComplete), defaultBindingMode: BindingMode.TwoWay, propertyChanged: OnSearchTextChanged);        
+        public static readonly BindableProperty SearchTextProperty =
+            BindableProperty.Create(nameof(SearchText), typeof(string), typeof(EntryAutoComplete),
+                defaultBindingMode: BindingMode.TwoWay, propertyChanged: OnSearchTextChanged);
 
-        public static readonly BindableProperty SearchTextColorProperty = 
-            BindableProperty.Create(nameof(SearchTextColor), typeof(Color), typeof(EntryAutoComplete), Color.Black, propertyChanged: OnSearchTextColorChanged);
+        public static readonly BindableProperty SearchTextColorProperty =
+            BindableProperty.Create(nameof(SearchTextColor), typeof(Color), typeof(EntryAutoComplete), Color.Black,
+                propertyChanged: OnSearchTextColorChanged);
 
         public static readonly BindableProperty MaximumVisibleElementsProperty =
             BindableProperty.Create(nameof(MaximumVisibleElements), typeof(int), typeof(EntryAutoComplete), 4);
 
         public static readonly BindableProperty MinimumPrefixCharacterProperty =
-            BindableProperty.Create(nameof(MinimumPrefixCharacter), typeof(int), typeof(EntryAutoComplete), 2);
+            BindableProperty.Create(nameof(MinimumPrefixCharacter), typeof(int), typeof(EntryAutoComplete), 1);
 
         public static readonly BindableProperty PlaceholderProperty =
-            BindableProperty.Create(nameof(Placeholder), typeof(string), typeof(EntryAutoComplete), propertyChanged: OnPlaceholderChanged);
+            BindableProperty.Create(nameof(Placeholder), typeof(string), typeof(EntryAutoComplete),
+                propertyChanged: OnPlaceholderChanged);
 
         public static readonly BindableProperty PlaceholderColorProperty =
-            BindableProperty.Create(nameof(PlaceholderColor), typeof(Color), typeof(EntryAutoComplete), Color.DarkGray, propertyChanged: OnPlaceholderColorChanged);
+            BindableProperty.Create(nameof(PlaceholderColor), typeof(Color), typeof(EntryAutoComplete), Color.DarkGray,
+                propertyChanged: OnPlaceholderColorChanged);
 
         public static readonly BindableProperty ItemsSourceProperty =
             BindableProperty.Create(nameof(ItemsSource), typeof(IEnumerable), typeof(EntryAutoComplete));
 
         public static readonly BindableProperty IsClearButtonVisibleProperty =
-            BindableProperty.Create(nameof(IsClearButtonVisible), typeof(bool), typeof(EntryAutoComplete), true, propertyChanged: OnIsClearButtonVisibleChanged);
+            BindableProperty.Create(nameof(IsClearButtonVisible), typeof(bool), typeof(EntryAutoComplete), true,
+                propertyChanged: OnIsClearImageVisibleChanged);
 
         private static void OnSearchTextChanged(BindableObject bindable, object oldvalue, object newvalue)
         {
             var autoCompleteView = bindable as EntryAutoComplete;
-            autoCompleteView.SearchText = (string)newvalue;
+            autoCompleteView.SearchText = (string) newvalue;
             autoCompleteView.SuggestionsListView.ItemsSource = autoCompleteView.ItemsSource;
             autoCompleteView._originSuggestions = autoCompleteView.ItemsSource;
         }
@@ -43,20 +46,20 @@ namespace EntryAutoComplete.CustomControl
         private static void OnSearchTextColorChanged(BindableObject bindable, object oldvalue, object newvalue)
         {
             var entryAutoComplete = bindable as EntryAutoComplete;
-            entryAutoComplete.SearchEntry.TextColor = (Color)newvalue;
+            entryAutoComplete.SearchEntry.TextColor = (Color) newvalue;
         }
 
         private static void OnPlaceholderColorChanged(BindableObject bindable, object oldvalue, object newvalue)
         {
             var entryAutoComplete = bindable as EntryAutoComplete;
-            entryAutoComplete.SearchEntry.PlaceholderColor = (Color)newvalue;
+            entryAutoComplete.SearchEntry.PlaceholderColor = (Color) newvalue;
         }
 
-        private static void OnIsClearButtonVisibleChanged(BindableObject bindable, object oldValue, object newValue)
+        private static void OnIsClearImageVisibleChanged(BindableObject bindable, object oldValue, object newValue)
         {
             var entryAutoComplete = bindable as EntryAutoComplete;
-            var isVisible = (bool)newValue;
-            entryAutoComplete.ClearSearchEntryButton.IsVisible = isVisible;
+            var isVisible = (bool) newValue;
+            entryAutoComplete.ClearSearchEntryImage.IsVisible = isVisible;
         }
 
         private static void OnPlaceholderChanged(BindableObject bindable, object oldValue, object newValue)
@@ -109,7 +112,7 @@ namespace EntryAutoComplete.CustomControl
 
         public bool IsClearButtonVisible
         {
-            get { return (bool)GetValue(IsClearButtonVisibleProperty); }
+            get { return (bool) GetValue(IsClearButtonVisibleProperty); }
             set { SetValue(IsClearButtonVisibleProperty, value); }
         }
 
@@ -117,21 +120,33 @@ namespace EntryAutoComplete.CustomControl
         private ScrollView SuggestionWrapper;
         private ListView SuggestionsListView;
         private Entry SearchEntry;
-        private Button ClearSearchEntryButton;
+        private Image ClearSearchEntryImage;
+
 
         private IEnumerable _originSuggestions;
 
         public EntryAutoComplete()
         {
             InitGrid();
-            InitClearSearchEntryButton();
             InitSearchEntry();
+            InitClearImage();
             InitSuggestionsListView();
             InitSuggestionsScrollView();
 
             PlaceControlsInGrid();
 
             Content = Container;
+        }
+
+        private void InitClearImage()
+        {
+            ClearSearchEntryImage = new Image
+            {
+                Source = "baseline_search_black_24.png",
+                VerticalOptions = LayoutOptions.Center,
+                WidthRequest = 24,
+                HeightRequest = 24
+            };
         }
 
         private void PlaceControlsInGrid()
@@ -141,23 +156,20 @@ namespace EntryAutoComplete.CustomControl
                 Alignment = LayoutAlignment.Fill,
                 Expands = true
             };
-            ClearSearchEntryButton.HorizontalOptions = new LayoutOptions
+
+            var searchEntryLayout = new Grid();
+            searchEntryLayout.ColumnDefinitions.Add(new ColumnDefinition
             {
-                Alignment = LayoutAlignment.End,
-            };
-            ClearSearchEntryButton.VerticalOptions = new LayoutOptions
+                Width = new GridLength(1, GridUnitType.Star)
+            });
+            searchEntryLayout.ColumnDefinitions.Add(new ColumnDefinition
             {
-                Alignment = LayoutAlignment.Center
-            };
-            var searchEntryLayout = new StackLayout
-            {
-                Orientation = StackOrientation.Horizontal,
-                Children =
-                {
-                    SearchEntry,
-                    ClearSearchEntryButton
-                }
-            };
+                Width = new GridLength(1, GridUnitType.Auto)
+            });
+            searchEntryLayout.RowDefinitions.Add(new RowDefinition() {Height = 50});
+
+            searchEntryLayout.Children.Add(SearchEntry, 0, 0);
+            searchEntryLayout.Children.Add(ClearSearchEntryImage, 1, 0);
 
             Container.Children.Add(SuggestionWrapper);
             Container.Children.Add(searchEntryLayout, 0, 1);
@@ -200,32 +212,40 @@ namespace EntryAutoComplete.CustomControl
             {
                 RowSpacing = 0
             };
-            Container.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Star });
-            Container.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Star });
-            Container.RowDefinitions.Add(new RowDefinition() { Height = 50 });
-        }
-
-        private void InitClearSearchEntryButton()
-        {
-            ClearSearchEntryButton = new Button { Text = "✖", WidthRequest = 30, HeightRequest = 30, CornerRadius = 15, FontSize = 8 };
-            ClearSearchEntryButton.Clicked += (e, sender) => SearchEntry.Text = "";
+            Container.ColumnDefinitions.Add(new ColumnDefinition() {Width = GridLength.Star});
+            Container.RowDefinitions.Add(new RowDefinition() {Height = GridLength.Star});
+            Container.RowDefinitions.Add(new RowDefinition() {Height = 50});
         }
 
         private void SearchEntry_TextChanged(object sender, TextChangedEventArgs e)
         {
             SuggestionsListView.ItemsSource = _originSuggestions;
+            SearchEntry_IconChanged(e);
+
 
             if (e.NewTextValue.Length >= MinimumPrefixCharacter)
             {
                 var suggestions = FilterSuggestions(SuggestionsListView.ItemsSource, e.NewTextValue);
                 SuggestionsListView.ItemsSource = suggestions;
-                SuggestionWrapper.IsVisible = e.NewTextValue.Length!=0 && e.NewTextValue.Length >= MinimumPrefixCharacter;
+                SuggestionWrapper.IsVisible =
+                    e.NewTextValue.Length != 0 && e.NewTextValue.Length >= MinimumPrefixCharacter;
             }
 
             else
             {
                 SuggestionWrapper.IsVisible = false;
             }
+        }
+
+        private void SearchEntry_IconChanged(TextChangedEventArgs e)
+        {
+            ClearSearchEntryImage.Source = string.IsNullOrEmpty(e.NewTextValue)
+                ? "baseline_search_black_24.png"
+                : "baseline_close_black_24.png";
+
+            var tapGestureRecongnizer = new TapGestureRecognizer();
+            tapGestureRecongnizer.Tapped += (x, y) => SearchEntry.Text = "";
+            ClearSearchEntryImage.GestureRecognizers.Add(tapGestureRecongnizer);
         }
 
         private IEnumerable FilterSuggestions(IEnumerable itemsSource, string searchText)
