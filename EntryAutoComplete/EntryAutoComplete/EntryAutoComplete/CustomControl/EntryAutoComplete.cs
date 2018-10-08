@@ -4,6 +4,13 @@ using Xamarin.Forms;
 
 namespace EntryAutoComplete.CustomControl
 {
+    public enum Mode
+    {
+        StartsWith,
+        Contains,
+        EndsWith
+    }
+
     public class EntryAutoComplete : ContentView
     {
         public static readonly BindableProperty SearchTextProperty =
@@ -35,10 +42,15 @@ namespace EntryAutoComplete.CustomControl
             BindableProperty.Create(nameof(IsClearButtonVisible), typeof(bool), typeof(EntryAutoComplete), true,
                 propertyChanged: OnIsClearImageVisibleChanged);
 
+        public static readonly BindableProperty SearchTypeProperty = BindableProperty.Create(nameof(SearchType),
+            typeof(Mode), typeof(Xamarin.Forms.PlatformConfiguration.AndroidSpecific.Entry),
+            Mode.Contains, BindingMode.OneWay, null, propertyChanged: OnSearchTypeChanged);
+
         private static void OnSearchTextChanged(BindableObject bindable, object oldvalue, object newvalue)
         {
             var autoCompleteView = bindable as EntryAutoComplete;
-            autoCompleteView.SearchText = (string) newvalue;
+            var searchText = (string) newvalue;
+            autoCompleteView.SearchText = searchText;
             autoCompleteView.SuggestionsListView.ItemsSource = autoCompleteView.ItemsSource;
             autoCompleteView._originSuggestions = autoCompleteView.ItemsSource;
         }
@@ -46,13 +58,15 @@ namespace EntryAutoComplete.CustomControl
         private static void OnSearchTextColorChanged(BindableObject bindable, object oldvalue, object newvalue)
         {
             var entryAutoComplete = bindable as EntryAutoComplete;
-            entryAutoComplete.SearchEntry.TextColor = (Color) newvalue;
+            var textColor = (Color) newvalue;
+            entryAutoComplete.SearchEntry.TextColor = textColor;
         }
 
         private static void OnPlaceholderColorChanged(BindableObject bindable, object oldvalue, object newvalue)
         {
             var entryAutoComplete = bindable as EntryAutoComplete;
-            entryAutoComplete.SearchEntry.PlaceholderColor = (Color) newvalue;
+            var placeHolderColor = (Color) newvalue;
+            entryAutoComplete.SearchEntry.PlaceholderColor = placeHolderColor;
         }
 
         private static void OnIsClearImageVisibleChanged(BindableObject bindable, object oldValue, object newValue)
@@ -66,6 +80,13 @@ namespace EntryAutoComplete.CustomControl
         {
             var entryAutoComplete = bindable as EntryAutoComplete;
             entryAutoComplete.SearchEntry.Placeholder = newValue?.ToString();
+        }
+
+        private static void OnSearchTypeChanged(BindableObject bindable, object oldvalue, object newvalue)
+        {
+            var entryAutoComplete = bindable as EntryAutoComplete;
+            var searchType = (Mode) newvalue;
+            entryAutoComplete.SearchType = searchType;
         }
 
         public string SearchText
@@ -114,6 +135,13 @@ namespace EntryAutoComplete.CustomControl
         {
             get { return (bool) GetValue(IsClearButtonVisibleProperty); }
             set { SetValue(IsClearButtonVisibleProperty, value); }
+        }
+
+        public Mode SearchType
+        {
+            get { return (Mode) GetValue(SearchTypeProperty); }
+
+            set { SetValue(SearchTypeProperty, value); }
         }
 
         private Grid Container;
@@ -250,20 +278,20 @@ namespace EntryAutoComplete.CustomControl
 
         private IEnumerable FilterSuggestions(IEnumerable itemsSource, string searchText)
         {
-            var suggestions = itemsSource.Cast<object>();
-
-            if (string.IsNullOrEmpty(searchText))
+            switch (SearchType)
             {
-                return itemsSource;
+                case Mode.StartsWith:
+                    return itemsSource.Cast<object>().Where(x => x.ToString().Equals(searchText) || 
+                                                                 x.ToString().ToLower().StartsWith(searchText.ToLower()));
+                case Mode.EndsWith:
+                    return itemsSource.Cast<object>().Where(x => x.ToString().Equals(searchText) || 
+                                                                 x.ToString().ToLower().EndsWith(searchText.ToLower()));
+                case Mode.Contains:
+                    return itemsSource.Cast<object>().Where(x => x.ToString().Equals(searchText) || 
+                                                                 x.ToString().ToLower().Contains(searchText.ToLower()));
             }
 
-            else
-            {
-                suggestions = itemsSource.Cast<object>().Where(x =>
-                    x.ToString().Equals(searchText) || x.ToString().ToLower().Contains(searchText.ToLower()));
-            }
-
-            return suggestions;
+            return itemsSource;
         }
     }
 }

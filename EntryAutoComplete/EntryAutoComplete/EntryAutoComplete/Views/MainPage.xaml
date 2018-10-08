@@ -23,13 +23,14 @@
             Placeholder="Enter country..." 
             ItemsSource="{Binding CountriesFilter}"
             SearchText="{Binding SearchCountry}"
+            SearchType="StartsWith"
             IsClearButtonVisible="{Binding Path=IsToggled, Source={x:Reference Name=ClearButtonVisibilitySwitch}}"/>
       
-        <customControl:EntryAutoComplete 
-            Placeholder="Enter country..."
-            ItemsSource="{Binding CountriesFilter}"
-            SearchText="{Binding SearchCountry}"
-            MinimumPrefixCharacter="3"/>
+<!--        <customControl:EntryAutoComplete -->
+<!--            Placeholder="Enter country..."-->
+<!--            ItemsSource="{Binding CountriesFilter}"-->
+<!--            SearchText="{Binding SearchCountry}"-->
+<!--            MinimumPrefixCharacter="3"/>-->
     </StackLayout>
 
 </ContentPage>
