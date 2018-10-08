@@ -10,8 +10,21 @@
         <viewModels:MainPageViewModel/>
     </ContentPage.BindingContext>
 
-    <StackLayout VerticalOptions="Center">
+    <StackLayout>
         <!-- Place new controls here -->
+        <StackLayout Orientation="Vertical">
+            <StackLayout Orientation="Horizontal">
+                <Label>Show clear button</Label>
+                <Switch x:Name="ClearButtonVisibilitySwitch" IsToggled="True"></Switch>
+            </StackLayout>
+        </StackLayout>
+        <customControl:EntryAutoComplete
+            VerticalOptions="CenterAndExpand"
+            Placeholder="Enter country..." 
+            ItemsSource="{Binding CountriesFilter}"
+            SearchText="{Binding SearchCountry}"
+            IsClearButtonVisible="{Binding Path=IsToggled, Source={x:Reference Name=ClearButtonVisibilitySwitch}}"/>
+      
         <customControl:EntryAutoComplete 
             Placeholder="Enter country..."
             ItemsSource="{Binding CountriesFilter}"

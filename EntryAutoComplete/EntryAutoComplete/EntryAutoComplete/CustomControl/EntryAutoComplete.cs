@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Xamarin.Forms;
@@ -7,8 +8,29 @@ namespace EntryAutoComplete.CustomControl
 {
     public class EntryAutoComplete : ContentView
     {
-        public static readonly BindableProperty SearchTextProperty = BindableProperty.Create(nameof(SearchText),
-            typeof(string), typeof(EntryAutoComplete), null, BindingMode.TwoWay, null, OnSearchTextChanged);
+        public static readonly BindableProperty SearchTextProperty = 
+            BindableProperty.Create(nameof(SearchText), typeof(string), typeof(EntryAutoComplete), defaultBindingMode: BindingMode.TwoWay, propertyChanged: OnSearchTextChanged);        
+
+        public static readonly BindableProperty SearchTextColorProperty = 
+            BindableProperty.Create(nameof(SearchTextColor), typeof(Color), typeof(EntryAutoComplete), Color.Black, propertyChanged: OnSearchTextColorChanged);
+
+        public static readonly BindableProperty MaximumVisibleElementsProperty =
+            BindableProperty.Create(nameof(MaximumVisibleElements), typeof(int), typeof(EntryAutoComplete), 4);
+
+        public static readonly BindableProperty MinimumPrefixCharacterProperty =
+            BindableProperty.Create(nameof(MinimumPrefixCharacter), typeof(int), typeof(EntryAutoComplete), 2);
+
+        public static readonly BindableProperty PlaceholderProperty =
+            BindableProperty.Create(nameof(Placeholder), typeof(string), typeof(EntryAutoComplete), propertyChanged: OnPlaceholderChanged);
+
+        public static readonly BindableProperty PlaceholderColorProperty =
+            BindableProperty.Create(nameof(PlaceholderColor), typeof(Color), typeof(EntryAutoComplete), Color.DarkGray, propertyChanged: OnPlaceholderColorChanged);
+
+        public static readonly BindableProperty ItemsSourceProperty =
+            BindableProperty.Create(nameof(ItemsSource), typeof(IEnumerable), typeof(EntryAutoComplete));
+
+        public static readonly BindableProperty IsClearButtonVisibleProperty =
+            BindableProperty.Create(nameof(IsClearButtonVisible), typeof(bool), typeof(EntryAutoComplete), true, propertyChanged: OnIsClearButtonVisibleChanged);
 
         private static void OnSearchTextChanged(BindableObject bindable, object oldvalue, object newvalue)
         {
@@ -18,13 +40,10 @@ namespace EntryAutoComplete.CustomControl
             autoCompleteView._originSuggestions = autoCompleteView.ItemsSource;
         }
 
-        public static readonly BindableProperty SearchTextColorProperty = BindableProperty.Create(nameof(SearchTextColor), typeof(Color), typeof(EntryAutoComplete), Color.Black,
-            BindingMode.OneWay, null, OnSearchTextColorChanged);
-
         private static void OnSearchTextColorChanged(BindableObject bindable, object oldvalue, object newvalue)
         {
             var entryAutoComplete = bindable as EntryAutoComplete;
-            entryAutoComplete.SearchEntry.TextColor = (Color) newvalue;
+            entryAutoComplete.SearchEntry.TextColor = (Color)newvalue;
         }
 
         public static readonly BindableProperty MaximumVisibleElementsProperty =
@@ -45,30 +64,14 @@ namespace EntryAutoComplete.CustomControl
         private static void OnPlaceholderColorChanged(BindableObject bindable, object oldvalue, object newvalue)
         {
             var entryAutoComplete = bindable as EntryAutoComplete;
-            entryAutoComplete.SearchEntry.PlaceholderColor = (Color) newvalue;
+            entryAutoComplete.SearchEntry.PlaceholderColor = (Color)newvalue;
         }
 
-        public static readonly BindableProperty ItemsSourceProperty = BindableProperty.Create(nameof(ItemsSource),
-            typeof(IEnumerable), typeof(EntryAutoComplete));
-
- 
-
-        private IEnumerable FilterSuggestions(IEnumerable itemsSource, string searchText)
+        private static void OnIsClearButtonVisibleChanged(BindableObject bindable, object oldValue, object newValue)
         {
-            var suggestions = itemsSource.Cast<object>();
-
-            if (string.IsNullOrEmpty(searchText))
-            {
-                return itemsSource;
-            }
-
-            else
-            {
-                suggestions = itemsSource.Cast<object>().Where(x =>
-                    x.ToString().Equals(searchText) || x.ToString().ToLower().Contains(searchText.ToLower()));
-            }
-
-            return suggestions;
+            var entryAutoComplete = bindable as EntryAutoComplete;
+            var isVisible = (bool)newValue;
+            entryAutoComplete.ClearSearchEntryButton.IsVisible = isVisible;
         }
 
         private static void OnPlaceholderChanged(BindableObject bindable, object oldValue, object newValue)
@@ -80,7 +83,6 @@ namespace EntryAutoComplete.CustomControl
         public string SearchText
         {
             get { return (string) GetValue(SearchTextProperty); }
-
             set { SetValue(SearchTextProperty, value); }
         }
 
@@ -120,46 +122,108 @@ namespace EntryAutoComplete.CustomControl
             set { SetValue(PlaceholderColorProperty, value); }
         }
 
-        private Grid Container { get; }
-        private ScrollView SuggestionWrapper { get; }
-        private ListView SuggestionsListView { get; }
-        private Entry SearchEntry { get; set; }
-        private IEnumerable _originSuggestions { get; set; }
+        public bool IsClearButtonVisible
+        {
+            get { return (bool)GetValue(IsClearButtonVisibleProperty); }
+            set { SetValue(IsClearButtonVisibleProperty, value); }
+        }
+
+        private Grid Container;
+        private ScrollView SuggestionWrapper;
+        private ListView SuggestionsListView;
+        private Entry SearchEntry;
+        private Button ClearSearchEntryButton;
+
+        private IEnumerable _originSuggestions;
 
         public EntryAutoComplete()
         {
-            Container = new Grid();
-            SearchEntry = new Entry();
-            SuggestionsListView = new ListView();
-            SuggestionWrapper = new ScrollView();
+            InitGrid();
+            InitClearSearchEntryButton();
+            InitSearchEntry();
+            InitSuggestionsListView();
+            InitSuggestionsScrollView();
 
-            // init Grid Layout
-            Container.RowSpacing = 0;
-            Container.ColumnDefinitions.Add(new ColumnDefinition() {Width = GridLength.Star});
-            Container.RowDefinitions.Add(new RowDefinition() {Height = GridLength.Star});
-            Container.RowDefinitions.Add(new RowDefinition() {Height = 50});
-
-
-            //Init Search Entry
-            SearchEntry.HorizontalOptions = LayoutOptions.Fill;
-            SearchEntry.VerticalOptions = LayoutOptions.Fill;
-            SearchEntry.TextChanged += SearchEntry_TextChanged;
-
-            // init Suggestions ListView
-            SuggestionsListView.BackgroundColor = Color.White;
-            SuggestionsListView.VerticalOptions = LayoutOptions.End;
-
-            // ScrollView for ListView
-            SuggestionWrapper.VerticalOptions = LayoutOptions.Fill;
-            SuggestionWrapper.Orientation = ScrollOrientation.Vertical;
-            SuggestionWrapper.BackgroundColor = Color.White;
-            SuggestionWrapper.Content = SuggestionsListView;
-            SuggestionWrapper.IsVisible = false;
-
-            Container.Children.Add(SuggestionWrapper);
-            Container.Children.Add(SearchEntry, 0, 1);
+            PlaceControlsInGrid();
 
             Content = Container;
+        }
+
+        private void PlaceControlsInGrid()
+        {
+            SearchEntry.HorizontalOptions = new LayoutOptions
+            {
+                Alignment = LayoutAlignment.Fill,
+                Expands = true
+            };
+            ClearSearchEntryButton.HorizontalOptions = new LayoutOptions
+            {
+                Alignment = LayoutAlignment.End,
+            };
+            ClearSearchEntryButton.VerticalOptions = new LayoutOptions
+            {
+                Alignment = LayoutAlignment.Center
+            };
+            var searchEntryLayout = new StackLayout
+            {
+                Orientation = StackOrientation.Horizontal,
+                Children =
+                {
+                    SearchEntry,
+                    ClearSearchEntryButton
+                }
+            };
+
+            Container.Children.Add(SuggestionWrapper);
+            Container.Children.Add(searchEntryLayout, 0, 1);
+        }
+
+        private void InitSuggestionsScrollView()
+        {
+            SuggestionWrapper = new ScrollView
+            {
+                VerticalOptions = LayoutOptions.Fill,
+                Orientation = ScrollOrientation.Vertical,
+                BackgroundColor = Color.White,
+                Content = SuggestionsListView,
+                IsVisible = false
+            };
+        }
+
+        private void InitSuggestionsListView()
+        {
+            SuggestionsListView = new ListView
+            {
+                BackgroundColor = Color.White,
+                VerticalOptions = LayoutOptions.End
+            };
+        }
+
+        private void InitSearchEntry()
+        {
+            SearchEntry = new Entry
+            {
+                HorizontalOptions = LayoutOptions.Fill,
+                VerticalOptions = LayoutOptions.Fill
+            };
+            SearchEntry.TextChanged += SearchEntry_TextChanged;
+        }
+
+        private void InitGrid()
+        {
+            Container = new Grid
+            {
+                RowSpacing = 0
+            };
+            Container.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Star });
+            Container.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Star });
+            Container.RowDefinitions.Add(new RowDefinition() { Height = 50 });
+        }
+
+        private void InitClearSearchEntryButton()
+        {
+            ClearSearchEntryButton = new Button { Text = "✖", WidthRequest = 30, HeightRequest = 30, CornerRadius = 15, FontSize = 8 };
+            ClearSearchEntryButton.Clicked += (e, sender) => SearchEntry.Text = "";
         }
 
         private void SearchEntry_TextChanged(object sender, TextChangedEventArgs e)
@@ -177,6 +241,24 @@ namespace EntryAutoComplete.CustomControl
             {
                 SuggestionWrapper.IsVisible = false;
             }
+        }
+
+        private IEnumerable FilterSuggestions(IEnumerable itemsSource, string searchText)
+        {
+            var suggestions = itemsSource.Cast<object>();
+
+            if (string.IsNullOrEmpty(searchText))
+            {
+                return itemsSource;
+            }
+
+            else
+            {
+                suggestions = itemsSource.Cast<object>().Where(x =>
+                    x.ToString().Equals(searchText) || x.ToString().ToLower().Contains(searchText.ToLower()));
+            }
+
+            return suggestions;
         }
     }
 }
