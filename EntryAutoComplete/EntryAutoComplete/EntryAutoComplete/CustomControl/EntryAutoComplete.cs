@@ -65,8 +65,8 @@ namespace EntryAutoComplete.CustomControl
         private static void OnPlaceholderColorChanged(BindableObject bindable, object oldvalue, object newvalue)
         {
             var entryAutoComplete = bindable as EntryAutoComplete;
-            var placeHolderColor = (Color) newvalue;
-            entryAutoComplete.SearchEntry.PlaceholderColor = placeHolderColor;
+            var placeholderColor = (Color) newvalue;
+            entryAutoComplete.SearchEntry.PlaceholderColor = placeholderColor;
         }
 
         private static void OnIsClearImageVisibleChanged(BindableObject bindable, object oldValue, object newValue)
@@ -79,7 +79,8 @@ namespace EntryAutoComplete.CustomControl
         private static void OnPlaceholderChanged(BindableObject bindable, object oldValue, object newValue)
         {
             var entryAutoComplete = bindable as EntryAutoComplete;
-            entryAutoComplete.SearchEntry.Placeholder = newValue?.ToString();
+            var placeholder = (string) newValue;
+            entryAutoComplete.SearchEntry.Placeholder = placeholder;
         }
 
         private static void OnSearchTypeChanged(BindableObject bindable, object oldvalue, object newvalue)
