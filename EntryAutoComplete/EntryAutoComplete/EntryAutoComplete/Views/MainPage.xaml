@@ -24,6 +24,12 @@
             ItemsSource="{Binding CountriesFilter}"
             SearchText="{Binding SearchCountry}"
             IsClearButtonVisible="{Binding Path=IsToggled, Source={x:Reference Name=ClearButtonVisibilitySwitch}}"/>
+      
+        <customControl:EntryAutoComplete 
+            Placeholder="Enter country..."
+            ItemsSource="{Binding CountriesFilter}"
+            SearchText="{Binding SearchCountry}"
+            MinimumPrefixCharacter="3"/>
     </StackLayout>
 
 </ContentPage>

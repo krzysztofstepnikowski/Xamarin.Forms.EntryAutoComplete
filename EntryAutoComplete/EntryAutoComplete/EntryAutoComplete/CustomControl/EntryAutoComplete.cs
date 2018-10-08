@@ -46,6 +46,21 @@ namespace EntryAutoComplete.CustomControl
             entryAutoComplete.SearchEntry.TextColor = (Color)newvalue;
         }
 
+        public static readonly BindableProperty MaximumVisibleElementsProperty =
+            BindableProperty.Create(nameof(MaximumVisibleElements), typeof(int), typeof(EntryAutoComplete), 4);
+
+        public static readonly BindableProperty MinimumPrefixCharacterProperty =
+            BindableProperty.Create(nameof(MinimumPrefixCharacter), typeof(int), typeof(EntryAutoComplete), 1);
+
+        public static readonly BindableProperty PlaceholderProperty =
+            BindableProperty.Create(nameof(Placeholder), typeof(string), typeof(EntryAutoComplete), null,
+                BindingMode.OneWay, null, OnPlaceholderChanged);
+
+
+        public static readonly BindableProperty PlaceholderColorProperty =
+            BindableProperty.Create(nameof(PlaceholderColor), typeof(Color), typeof(EntryAutoComplete), Color.DarkGray,
+                BindingMode.OneWay, null, OnPlaceholderColorChanged);
+
         private static void OnPlaceholderColorChanged(BindableObject bindable, object oldvalue, object newvalue)
         {
             var entryAutoComplete = bindable as EntryAutoComplete;
