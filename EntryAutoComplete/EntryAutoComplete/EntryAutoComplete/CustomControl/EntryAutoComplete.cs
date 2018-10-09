@@ -196,6 +196,10 @@ namespace EntryAutoComplete.CustomControl
                 WidthRequest = 24,
                 HeightRequest = 24
             };
+
+            var tapGestureRecognizer = new TapGestureRecognizer();
+            tapGestureRecognizer.Tapped += (x, y) => SearchEntry.Text = "";
+            ClearSearchEntryImage.GestureRecognizers.Add(tapGestureRecognizer);
         }
 
         private void InitSuggestionsListView()
@@ -274,10 +278,6 @@ namespace EntryAutoComplete.CustomControl
             ClearSearchEntryImage.Source = string.IsNullOrEmpty(e.NewTextValue)
                 ? "baseline_search_black_24.png"
                 : "baseline_close_black_24.png";
-
-            var tapGestureRecognizer = new TapGestureRecognizer();
-            tapGestureRecognizer.Tapped += (x, y) => SearchEntry.Text = "";
-            ClearSearchEntryImage.GestureRecognizers.Add(tapGestureRecognizer);
         }
 
         private IEnumerable FilterSuggestions(IEnumerable itemsSource, string searchText)
