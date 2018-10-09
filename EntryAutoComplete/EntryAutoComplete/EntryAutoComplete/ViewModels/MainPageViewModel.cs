@@ -9,7 +9,6 @@ namespace EntryAutoComplete.ViewModels
     public class MainPageViewModel : INotifyPropertyChanged
     {
         private string _searchCountry = string.Empty;
-
         public string SearchCountry
         {
             get { return _searchCountry; }
@@ -22,7 +21,6 @@ namespace EntryAutoComplete.ViewModels
         }
 
         private List<string> _countries;
-
         public List<string> Countries
         {
             get { return _countries; }
@@ -34,7 +32,6 @@ namespace EntryAutoComplete.ViewModels
         }
 
         private List<string> _countriesFilter;
-
         public List<string> CountriesFilter
         {
             get { return _countriesFilter; }

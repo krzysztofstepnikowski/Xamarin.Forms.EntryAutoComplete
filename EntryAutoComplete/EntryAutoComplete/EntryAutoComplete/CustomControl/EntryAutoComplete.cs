@@ -151,7 +151,6 @@ namespace EntryAutoComplete.CustomControl
         private Entry SearchEntry;
         private Image ClearSearchEntryImage;
 
-
         private IEnumerable _originSuggestions;
 
         public EntryAutoComplete()
@@ -167,6 +166,27 @@ namespace EntryAutoComplete.CustomControl
             Content = Container;
         }
 
+        private void InitGrid()
+        {
+            Container = new Grid
+            {
+                RowSpacing = 0
+            };
+            Container.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Star });
+            Container.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Star });
+            Container.RowDefinitions.Add(new RowDefinition() { Height = 50 });
+        }
+
+        private void InitSearchEntry()
+        {
+            SearchEntry = new Entry
+            {
+                HorizontalOptions = LayoutOptions.Fill,
+                VerticalOptions = LayoutOptions.Fill
+            };
+            SearchEntry.TextChanged += SearchEntry_TextChanged;
+        }
+
         private void InitClearImage()
         {
             ClearSearchEntryImage = new Image
@@ -175,6 +195,28 @@ namespace EntryAutoComplete.CustomControl
                 VerticalOptions = LayoutOptions.Center,
                 WidthRequest = 24,
                 HeightRequest = 24
+            };
+        }
+
+        private void InitSuggestionsListView()
+        {
+            SuggestionsListView = new ListView
+            {
+                BackgroundColor = Color.White,
+                VerticalOptions = LayoutOptions.End
+            };
+
+            SuggestionsListView.ItemSelected += (e, sender) => SuggestionsListView.SelectedItem = null;
+        }
+
+        private void InitSuggestionsScrollView()
+        {
+            SuggestionWrapper = new ScrollView
+            {
+                Orientation = ScrollOrientation.Vertical,
+                BackgroundColor = Color.White,
+                Content = SuggestionsListView,
+                IsVisible = false
             };
         }
 
@@ -204,48 +246,6 @@ namespace EntryAutoComplete.CustomControl
             Container.Children.Add(searchEntryLayout, 0, 1);
         }
 
-        private void InitSuggestionsScrollView()
-        {
-            SuggestionWrapper = new ScrollView
-            {
-                VerticalOptions = LayoutOptions.Fill,
-                Orientation = ScrollOrientation.Vertical,
-                BackgroundColor = Color.White,
-                Content = SuggestionsListView,
-                IsVisible = false
-            };
-        }
-
-        private void InitSuggestionsListView()
-        {
-            SuggestionsListView = new ListView
-            {
-                BackgroundColor = Color.White,
-                VerticalOptions = LayoutOptions.End
-            };
-        }
-
-        private void InitSearchEntry()
-        {
-            SearchEntry = new Entry
-            {
-                HorizontalOptions = LayoutOptions.Fill,
-                VerticalOptions = LayoutOptions.Fill
-            };
-            SearchEntry.TextChanged += SearchEntry_TextChanged;
-        }
-
-        private void InitGrid()
-        {
-            Container = new Grid
-            {
-                RowSpacing = 0
-            };
-            Container.ColumnDefinitions.Add(new ColumnDefinition() {Width = GridLength.Star});
-            Container.RowDefinitions.Add(new RowDefinition() {Height = GridLength.Star});
-            Container.RowDefinitions.Add(new RowDefinition() {Height = 50});
-        }
-
         private void SearchEntry_TextChanged(object sender, TextChangedEventArgs e)
         {
             SuggestionsListView.ItemsSource = _originSuggestions;
@@ -256,13 +256,16 @@ namespace EntryAutoComplete.CustomControl
             {
                 var suggestions = FilterSuggestions(SuggestionsListView.ItemsSource, e.NewTextValue);
                 SuggestionsListView.ItemsSource = suggestions;
-                SuggestionWrapper.IsVisible =
-                    e.NewTextValue.Length != 0 && e.NewTextValue.Length >= MinimumPrefixCharacter;
             }
 
-            else
+            SuggestionWrapper.IsVisible = e.NewTextValue.Length != 0 &&
+                                          e.NewTextValue.Length >= MinimumPrefixCharacter &&
+                                          SuggestionsListView.ItemsSource.Cast<object>().Count() != 0;
+            SuggestionWrapper.IsEnabled = SuggestionsListView.ItemsSource.Cast<object>().Count() >= MaximumVisibleElements;
+
+            if (SuggestionWrapper.IsVisible)
             {
-                SuggestionWrapper.IsVisible = false;
+                UpdateLayout();
             }
         }
 
@@ -272,9 +275,9 @@ namespace EntryAutoComplete.CustomControl
                 ? "baseline_search_black_24.png"
                 : "baseline_close_black_24.png";
 
-            var tapGestureRecongnizer = new TapGestureRecognizer();
-            tapGestureRecongnizer.Tapped += (x, y) => SearchEntry.Text = "";
-            ClearSearchEntryImage.GestureRecognizers.Add(tapGestureRecongnizer);
+            var tapGestureRecognizer = new TapGestureRecognizer();
+            tapGestureRecognizer.Tapped += (x, y) => SearchEntry.Text = "";
+            ClearSearchEntryImage.GestureRecognizers.Add(tapGestureRecognizer);
         }
 
         private IEnumerable FilterSuggestions(IEnumerable itemsSource, string searchText)
@@ -293,6 +296,23 @@ namespace EntryAutoComplete.CustomControl
             }
 
             return itemsSource;
+        }
+
+        private int GetExpectedHeight()
+        {
+            var items = SuggestionsListView.ItemsSource.Cast<object>().ToList();
+            var wrapperHeightRequest = (items.ToList().Count >= MaximumVisibleElements
+                ? MaximumVisibleElements * 40 + 60
+                : items.Count * 40 + 60);
+
+            return wrapperHeightRequest;
+        }
+
+        private void UpdateLayout()
+        {
+            var expectedHeight = GetExpectedHeight();
+            Container.HeightRequest = expectedHeight;
+            Container.ForceLayout();
         }
     }
 }
