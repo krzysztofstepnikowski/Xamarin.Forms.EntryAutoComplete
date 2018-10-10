@@ -207,7 +207,8 @@ namespace EntryAutoComplete.CustomControl
             SuggestionsListView = new ListView
             {
                 BackgroundColor = Color.White,
-                VerticalOptions = LayoutOptions.End
+                VerticalOptions = LayoutOptions.End,
+                RowHeight = 40
             };
 
             SuggestionsListView.ItemSelected += (e, sender) => SuggestionsListView.SelectedItem = null;
@@ -299,11 +300,11 @@ namespace EntryAutoComplete.CustomControl
         }
 
         private int GetExpectedHeight()
-        {
+        {            
             var items = SuggestionsListView.ItemsSource.Cast<object>().ToList();
             var wrapperHeightRequest = (items.ToList().Count >= MaximumVisibleElements
-                ? MaximumVisibleElements * 40 + 60
-                : items.Count * 40 + 60);
+                ? (MaximumVisibleElements+1) * SuggestionsListView.RowHeight
+                : (items.Count+1) * SuggestionsListView.RowHeight);
 
             return wrapperHeightRequest;
         }
