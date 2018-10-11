@@ -13,6 +13,8 @@ namespace EntryAutoComplete.CustomControl
 
     public class EntryAutoComplete : ContentView
     {
+        private const int RowHeight = 40;
+
         public static readonly BindableProperty SearchTextProperty =
             BindableProperty.Create(nameof(SearchText), typeof(string), typeof(EntryAutoComplete),
                 defaultBindingMode: BindingMode.TwoWay, propertyChanged: OnSearchTextChanged);
@@ -51,7 +53,11 @@ namespace EntryAutoComplete.CustomControl
             var autoCompleteView = bindable as EntryAutoComplete;
             var searchText = (string) newvalue;
             autoCompleteView.SearchText = searchText;
-            autoCompleteView.SuggestionsListView.ItemsSource = autoCompleteView.ItemsSource;
+            autoCompleteView.SuggestionsStackLayout.Children.Clear();
+            foreach (var item in autoCompleteView.ItemsSource)
+            {
+                autoCompleteView.SuggestionsStackLayout.Children.Add(new Label { Text = item.ToString() });
+            }
             autoCompleteView._originSuggestions = autoCompleteView.ItemsSource;
         }
 
@@ -146,8 +152,9 @@ namespace EntryAutoComplete.CustomControl
         }
 
         private Grid Container;
+        private Grid SearchEntryLayout;
         private ScrollView SuggestionWrapper;
-        private ListView SuggestionsListView;
+        private StackLayout SuggestionsStackLayout;
         private Entry SearchEntry;
         private Image ClearSearchEntryImage;
 
@@ -204,13 +211,12 @@ namespace EntryAutoComplete.CustomControl
 
         private void InitSuggestionsListView()
         {
-            SuggestionsListView = new ListView
+            SuggestionsStackLayout = new StackLayout
             {
                 BackgroundColor = Color.White,
-                VerticalOptions = LayoutOptions.End
+                VerticalOptions = LayoutOptions.End,
+                Spacing = 0
             };
-
-            SuggestionsListView.ItemSelected += (e, sender) => SuggestionsListView.SelectedItem = null;
         }
 
         private void InitSuggestionsScrollView()
@@ -219,7 +225,7 @@ namespace EntryAutoComplete.CustomControl
             {
                 Orientation = ScrollOrientation.Vertical,
                 BackgroundColor = Color.White,
-                Content = SuggestionsListView,
+                Content = SuggestionsStackLayout,
                 IsVisible = false
             };
         }
@@ -232,40 +238,50 @@ namespace EntryAutoComplete.CustomControl
                 Expands = true
             };
 
-            var searchEntryLayout = new Grid();
-            searchEntryLayout.ColumnDefinitions.Add(new ColumnDefinition
+            SearchEntryLayout = new Grid();
+            SearchEntryLayout.ColumnDefinitions.Add(new ColumnDefinition
             {
                 Width = new GridLength(1, GridUnitType.Star)
             });
-            searchEntryLayout.ColumnDefinitions.Add(new ColumnDefinition
+            SearchEntryLayout.ColumnDefinitions.Add(new ColumnDefinition
             {
                 Width = new GridLength(1, GridUnitType.Auto)
             });
-            searchEntryLayout.RowDefinitions.Add(new RowDefinition() {Height = 50});
+            SearchEntryLayout.RowDefinitions.Add(new RowDefinition() {Height = 50});
 
-            searchEntryLayout.Children.Add(SearchEntry, 0, 0);
-            searchEntryLayout.Children.Add(ClearSearchEntryImage, 1, 0);
+            SearchEntryLayout.Children.Add(SearchEntry, 0, 0);
+            SearchEntryLayout.Children.Add(ClearSearchEntryImage, 1, 0);
 
             Container.Children.Add(SuggestionWrapper);
-            Container.Children.Add(searchEntryLayout, 0, 1);
+            Container.Children.Add(SearchEntryLayout, 0, 1);
         }
 
         private void SearchEntry_TextChanged(object sender, TextChangedEventArgs e)
         {
-            SuggestionsListView.ItemsSource = _originSuggestions;
+            var newSuggestions = _originSuggestions;
             SearchEntry_IconChanged(e);
 
 
             if (e.NewTextValue.Length >= MinimumPrefixCharacter)
             {
-                var suggestions = FilterSuggestions(SuggestionsListView.ItemsSource, e.NewTextValue);
-                SuggestionsListView.ItemsSource = suggestions;
+                newSuggestions = FilterSuggestions(newSuggestions, e.NewTextValue);
             }
 
             SuggestionWrapper.IsVisible = e.NewTextValue.Length != 0 &&
                                           e.NewTextValue.Length >= MinimumPrefixCharacter &&
-                                          SuggestionsListView.ItemsSource.Cast<object>().Count() != 0;
-            SuggestionWrapper.IsEnabled = SuggestionsListView.ItemsSource.Cast<object>().Count() >= MaximumVisibleElements;
+                                          newSuggestions.Cast<object>().Count() != 0;
+            SuggestionWrapper.IsEnabled = newSuggestions.Cast<object>().Count() >= MaximumVisibleElements;
+
+            SuggestionsStackLayout.Children.Clear();
+            foreach(var item in newSuggestions)
+            {
+                SuggestionsStackLayout.Children.Add(new Label
+                {
+                    Text = item.ToString(),
+                    HeightRequest = RowHeight,
+                    VerticalTextAlignment = TextAlignment.Center
+                });
+            }
 
             if (SuggestionWrapper.IsVisible)
             {
@@ -298,20 +314,19 @@ namespace EntryAutoComplete.CustomControl
             return itemsSource;
         }
 
-        private int GetExpectedHeight()
+        private int GetSuggestionsListHeight()
         {
-            var items = SuggestionsListView.ItemsSource.Cast<object>().ToList();
-            var wrapperHeightRequest = (items.ToList().Count >= MaximumVisibleElements
-                ? MaximumVisibleElements * 40 + 60
-                : items.Count * 40 + 60);
-
-            return wrapperHeightRequest;
+            var items = SuggestionsStackLayout.Children.Cast<object>().ToList();
+            return items.ToList().Count >= MaximumVisibleElements
+                ? MaximumVisibleElements * RowHeight
+                : items.Count * RowHeight;
         }
 
         private void UpdateLayout()
         {
-            var expectedHeight = GetExpectedHeight();
-            Container.HeightRequest = expectedHeight;
+            var listHeight = GetSuggestionsListHeight();
+            SuggestionWrapper.HeightRequest = listHeight;
+            Container.HeightRequest = listHeight + SearchEntryLayout.Height;
             Container.ForceLayout();
         }
     }
