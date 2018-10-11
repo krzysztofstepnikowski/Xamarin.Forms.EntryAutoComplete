@@ -94,11 +94,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\layout\listview_custom_layout.axml">
-      <SubType>Designer</SubType>
-    </AndroidResource>
-  </ItemGroup>
-  <ItemGroup>
     <AndroidResource Include="Resources\drawable\baseline_search_black_24.png" />
   </ItemGroup>
   <ItemGroup>

@@ -200,8 +200,10 @@ namespace EntryAutoComplete.CustomControl
             {
                 Source = "baseline_search_black_24.png",
                 VerticalOptions = LayoutOptions.Center,
+                HorizontalOptions = LayoutOptions.End,
                 WidthRequest = 24,
-                HeightRequest = 24
+                HeightRequest = 24,
+                Margin = Device.OS!=TargetPlatform.Windows ? new Thickness(0,0,5,0) : new Thickness(0,0,10,15)
             };
 
             var tapGestureRecognizer = new TapGestureRecognizer();
@@ -243,14 +245,10 @@ namespace EntryAutoComplete.CustomControl
             {
                 Width = new GridLength(1, GridUnitType.Star)
             });
-            SearchEntryLayout.ColumnDefinitions.Add(new ColumnDefinition
-            {
-                Width = new GridLength(1, GridUnitType.Auto)
-            });
             SearchEntryLayout.RowDefinitions.Add(new RowDefinition() {Height = 50});
 
             SearchEntryLayout.Children.Add(SearchEntry, 0, 0);
-            SearchEntryLayout.Children.Add(ClearSearchEntryImage, 1, 0);
+            SearchEntryLayout.Children.Add(ClearSearchEntryImage, 0, 0);
 
             Container.Children.Add(SuggestionWrapper);
             Container.Children.Add(SearchEntryLayout, 0, 1);
