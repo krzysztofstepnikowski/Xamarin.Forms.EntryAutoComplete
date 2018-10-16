@@ -1,30 +1,18 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using Xamarin.Forms;
 
 namespace EntryAutoComplete.CustomControl
 {
-    public enum Mode
-    {
-        StartsWith,
-        EndsWith,
-        Contains,
-        Custom
-    }
-
     public class SearchMode
     {
         private readonly Func<string, object, bool> _filter;
-
         private SearchMode(Func<string, object, bool> filter)
         {
             _filter = filter;
         }
-
         public bool Filter(string entry, object obj) => _filter(entry, obj);
-
         public static SearchMode StartsWith { get; } = new SearchMode((entry, obj) => obj.ToString().ToLower().StartsWith(entry.ToLower()));
         public static SearchMode Contains { get; } = new SearchMode((entry, obj) => obj.ToString().ToLower().Contains(entry.ToLower()));
         public static SearchMode EndsWith { get; } = new SearchMode((entry, obj) => obj.ToString().ToLower().EndsWith(entry.ToLower()));
@@ -33,6 +21,7 @@ namespace EntryAutoComplete.CustomControl
             return new SearchMode(filter);
         }
     }
+
     public class EntryAutoComplete : ContentView
     {
         private const int RowHeight = 40;
@@ -66,9 +55,8 @@ namespace EntryAutoComplete.CustomControl
             BindableProperty.Create(nameof(IsClearButtonVisible), typeof(bool), typeof(EntryAutoComplete), true,
                 propertyChanged: OnIsClearImageVisibleChanged);
 
-        public static readonly BindableProperty SearchTypeProperty = BindableProperty.Create(nameof(SearchType),
-            typeof(Mode), typeof(EntryAutoComplete),
-            Mode.Contains, BindingMode.OneWay, null, propertyChanged: OnSearchTypeChanged);
+        public static readonly BindableProperty SearchModeProperty = BindableProperty.Create(nameof(SearchMode),
+            typeof(SearchMode), typeof(EntryAutoComplete), SearchMode.Contains, BindingMode.TwoWay, propertyChanged: OnSearchModeChanged);
 
         private static void OnSearchTextChanged(BindableObject bindable, object oldvalue, object newvalue)
         {
@@ -111,66 +99,69 @@ namespace EntryAutoComplete.CustomControl
             entryAutoComplete.SearchEntry.Placeholder = placeholder;
         }
 
-        private static void OnSearchTypeChanged(BindableObject bindable, object oldvalue, object newvalue)
+        private static void OnSearchModeChanged(BindableObject bindable, object oldvalue, object newvalue)
         {
             var entryAutoComplete = bindable as EntryAutoComplete;
-            var searchType = (Mode)newvalue;
-            entryAutoComplete.SearchType = searchType;
+            var searchType = (SearchMode)newvalue;
+            entryAutoComplete.SearchMode = searchType;
         }
 
         public string SearchText
         {
-            get { return (string)GetValue(SearchTextProperty); }
-            set { SetValue(SearchTextProperty, value); }
+            get => (string)GetValue(SearchTextProperty);
+            set => SetValue(SearchTextProperty, value);
         }
 
         public Color SearchTextColor
         {
-            get { return (Color)GetValue(SearchTextColorProperty); }
-            set { SetValue(SearchTextColorProperty, value); }
+            get => (Color)GetValue(SearchTextColorProperty);
+            set => SetValue(SearchTextColorProperty, value);
         }
 
         public int MaximumVisibleElements
         {
-            get { return (int)GetValue(MaximumVisibleElementsProperty); }
-            set { SetValue(MaximumVisibleElementsProperty, value); }
+            get => (int)GetValue(MaximumVisibleElementsProperty);
+            set => SetValue(MaximumVisibleElementsProperty, value);
         }
 
         public int MinimumPrefixCharacter
         {
-            get { return (int)GetValue(MinimumPrefixCharacterProperty); }
-            set { SetValue(MinimumPrefixCharacterProperty, value); }
+            get => (int)GetValue(MinimumPrefixCharacterProperty);
+            set => SetValue(MinimumPrefixCharacterProperty, value);
         }
 
         public IEnumerable ItemsSource
         {
-            get { return (IEnumerable)GetValue(ItemsSourceProperty); }
-            set { SetValue(ItemsSourceProperty, value); }
+            get => (IEnumerable)GetValue(ItemsSourceProperty);
+            set => SetValue(ItemsSourceProperty, value);
         }
 
         public string Placeholder
         {
-            get { return (string)GetValue(PlaceholderProperty); }
-            set { SetValue(PlaceholderProperty, value); }
+            get => (string)GetValue(PlaceholderProperty);
+            set => SetValue(PlaceholderProperty, value);
         }
 
         public Color PlaceholderColor
         {
-            get { return (Color)GetValue(PlaceholderColorProperty); }
-            set { SetValue(PlaceholderColorProperty, value); }
+            get => (Color)GetValue(PlaceholderColorProperty);
+            set => SetValue(PlaceholderColorProperty, value);
         }
 
         public bool IsClearButtonVisible
         {
-            get { return (bool)GetValue(IsClearButtonVisibleProperty); }
-            set { SetValue(IsClearButtonVisibleProperty, value); }
+            get => (bool)GetValue(IsClearButtonVisibleProperty);
+            set => SetValue(IsClearButtonVisibleProperty, value);
         }
 
-        public Mode SearchType
+        public SearchMode SearchMode
         {
-            get { return (Mode)GetValue(SearchTypeProperty); }
-
-            set { SetValue(SearchTypeProperty, value); }
+            get => (SearchMode)GetValue(SearchModeProperty);
+            set
+            {
+                SetValue(SearchModeProperty, value);
+                UpdateSuggestions(SearchText);
+            }
         }
 
         private Grid Container;
@@ -179,7 +170,6 @@ namespace EntryAutoComplete.CustomControl
         private StackLayout SuggestionsStackLayout;
         private Entry SearchEntry;
         private Image ClearSearchEntryImage;
-        private SearchMode _searchMode;
 
         private IEnumerable _originSuggestions;
 
@@ -202,9 +192,9 @@ namespace EntryAutoComplete.CustomControl
             {
                 RowSpacing = 0
             };
-            Container.ColumnDefinitions.Add(new ColumnDefinition() { Width = GridLength.Star });
-            Container.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Star });
-            Container.RowDefinitions.Add(new RowDefinition() { Height = 50 });
+            Container.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star });
+            Container.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star });
+            Container.RowDefinitions.Add(new RowDefinition { Height = 50 });
         }
 
         private void InitSearchEntry()
@@ -226,7 +216,7 @@ namespace EntryAutoComplete.CustomControl
                 HorizontalOptions = LayoutOptions.End,
                 WidthRequest = 24,
                 HeightRequest = 24,
-                Margin = Device.OS != TargetPlatform.Windows ? new Thickness(0, 0, 5, 0) : new Thickness(0, 0, 10, 15)
+                Margin = Device.RuntimePlatform != Device.UWP ? new Thickness(0, 0, 5, 0) : new Thickness(0, 0, 10, 15)
             };
 
             var tapGestureRecognizer = new TapGestureRecognizer();
@@ -268,7 +258,7 @@ namespace EntryAutoComplete.CustomControl
             {
                 Width = new GridLength(1, GridUnitType.Star)
             });
-            SearchEntryLayout.RowDefinitions.Add(new RowDefinition() { Height = 50 });
+            SearchEntryLayout.RowDefinitions.Add(new RowDefinition { Height = 50 });
 
             SearchEntryLayout.Children.Add(SearchEntry, 0, 0);
             SearchEntryLayout.Children.Add(ClearSearchEntryImage, 0, 0);
@@ -279,17 +269,23 @@ namespace EntryAutoComplete.CustomControl
 
         private void SearchEntry_TextChanged(object sender, TextChangedEventArgs e)
         {
+            SearchText = e.NewTextValue;
+            UpdateSuggestions(e.NewTextValue);
+        }
+
+        private void UpdateSuggestions(string newSearchText)
+        {
             var newSuggestions = _originSuggestions;
-            SearchEntry_IconChanged(e);
+            SearchEntry_IconChanged(newSearchText);
 
 
-            if (e.NewTextValue.Length >= MinimumPrefixCharacter)
+            if (newSearchText.Length >= MinimumPrefixCharacter)
             {
-                newSuggestions = FilterSuggestions(e.NewTextValue, newSuggestions);
+                newSuggestions = FilterSuggestions(newSuggestions, newSearchText);
             }
 
-            SuggestionWrapper.IsVisible = e.NewTextValue.Length != 0 &&
-                                          e.NewTextValue.Length >= MinimumPrefixCharacter &&
+            SuggestionWrapper.IsVisible = newSearchText.Length != 0 &&
+                                          newSearchText.Length >= MinimumPrefixCharacter &&
                                           newSuggestions.Cast<object>().Count() != 0;
             SuggestionWrapper.IsEnabled = newSuggestions.Cast<object>().Count() >= MaximumVisibleElements;
 
@@ -310,54 +306,19 @@ namespace EntryAutoComplete.CustomControl
             }
         }
 
-        private void SearchEntry_IconChanged(TextChangedEventArgs e)
+        private void SearchEntry_IconChanged(string searchText)
         {
-            ClearSearchEntryImage.Source = string.IsNullOrEmpty(e.NewTextValue)
+            ClearSearchEntryImage.Source = string.IsNullOrEmpty(searchText)
                 ? "baseline_search_black_24.png"
                 : "baseline_close_black_24.png";
         }
 
-        private IEnumerable FilterSuggestions(string searchText, IEnumerable itemsSource)
+        private IEnumerable FilterSuggestions(IEnumerable itemsSource, string searchText)
         {
-            if (SearchType == Mode.StartsWith)
-            {
-                _searchMode = SearchMode.StartsWith;
-            }
-
-            if (SearchType == Mode.EndsWith)
-            {
-                _searchMode = SearchMode.EndsWith;
-            }
-
-            if (SearchType == Mode.Contains)
-            {
-                _searchMode = SearchMode.Contains;
-            }
-
-            if (SearchType == Mode.Custom)
-            {
-                _searchMode = SearchMode.Using(CustomSearch);
-            }
-
-            var suggestions = itemsSource.Cast<object>().ToList();
-            var filterSuggestions = new List<object>();
-
-            foreach (var item in suggestions)
-            {
-                var result =_searchMode.Filter(searchText, item);
-
-                if (result)
-                {
-                    filterSuggestions.Add(item);
-                }
-            }
-
-            return filterSuggestions;
-        }
-
-        private bool CustomSearch(object inputText, object currentItem)
-        {
-            return currentItem.ToString().Contains("gium");
+            return itemsSource
+                .Cast<object>()
+                .Where(obj => SearchMode.Filter(searchText, obj))
+                .ToArray();
         }
 
         private int GetSuggestionsListHeight()
