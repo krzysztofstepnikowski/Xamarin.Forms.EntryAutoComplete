@@ -24,7 +24,7 @@ namespace EntryAutoComplete.CustomControl
 
     public class EntryAutoComplete : ContentView
     {
-        private const int RowHeight = 40;
+        private const int RowHeight = 60;
 
         public static readonly BindableProperty SearchTextProperty =
             BindableProperty.Create(nameof(SearchText), typeof(string), typeof(EntryAutoComplete),
@@ -165,10 +165,11 @@ namespace EntryAutoComplete.CustomControl
         }
 
         private Grid Container;
+        private ShadowedFrame ShadowedFrame;
         private Grid SearchEntryLayout;
         private ScrollView SuggestionWrapper;
         private StackLayout SuggestionsStackLayout;
-        private Entry SearchEntry;
+        private BorderlessEntry SearchEntry;
         private Image ClearSearchEntryImage;
 
         private IEnumerable _originSuggestions;
@@ -199,7 +200,7 @@ namespace EntryAutoComplete.CustomControl
 
         private void InitSearchEntry()
         {
-            SearchEntry = new Entry
+            SearchEntry = new BorderlessEntry()
             {
                 HorizontalOptions = LayoutOptions.Fill,
                 VerticalOptions = LayoutOptions.Fill
@@ -230,7 +231,8 @@ namespace EntryAutoComplete.CustomControl
             {
                 BackgroundColor = Color.White,
                 VerticalOptions = LayoutOptions.End,
-                Spacing = 0
+                Spacing = 0,
+                Padding = new Thickness(20,0)
             };
         }
 
@@ -240,7 +242,10 @@ namespace EntryAutoComplete.CustomControl
             {
                 Orientation = ScrollOrientation.Vertical,
                 BackgroundColor = Color.White,
-                Content = SuggestionsStackLayout,
+                Content = new ShadowedFrame
+                {
+                    Content = SuggestionsStackLayout
+                },
                 IsVisible = false
             };
         }
@@ -253,18 +258,38 @@ namespace EntryAutoComplete.CustomControl
                 Expands = true
             };
 
+            ShadowedFrame = new ShadowedFrame()
+            {
+                Content = InitSearchEntryLayout()
+            };
+
             SearchEntryLayout = new Grid();
             SearchEntryLayout.ColumnDefinitions.Add(new ColumnDefinition
             {
                 Width = new GridLength(1, GridUnitType.Star)
             });
-            SearchEntryLayout.RowDefinitions.Add(new RowDefinition { Height = 50 });
+            SearchEntryLayout.RowDefinitions.Add(new RowDefinition { Height = 80 });
 
-            SearchEntryLayout.Children.Add(SearchEntry, 0, 0);
-            SearchEntryLayout.Children.Add(ClearSearchEntryImage, 0, 0);
+            SearchEntryLayout.Children.Add(ShadowedFrame, 0, 0);
+
 
             Container.Children.Add(SuggestionWrapper);
             Container.Children.Add(SearchEntryLayout, 0, 1);
+        }
+
+        private Grid InitSearchEntryLayout()
+        {
+            var searchEntryLayout = new Grid();
+            searchEntryLayout.ColumnDefinitions.Add(new ColumnDefinition
+            {
+                Width = new GridLength(1, GridUnitType.Star)
+            });
+            searchEntryLayout.RowDefinitions.Add(new RowDefinition {Height = 50});
+
+            searchEntryLayout.Children.Add(SearchEntry, 0, 0);
+            searchEntryLayout.Children.Add(ClearSearchEntryImage, 0, 0);
+
+            return searchEntryLayout;
         }
 
         private void SearchEntry_TextChanged(object sender, TextChangedEventArgs e)
@@ -295,10 +320,20 @@ namespace EntryAutoComplete.CustomControl
                 SuggestionsStackLayout.Children.Add(new Label
                 {
                     Text = item.ToString(),
+                    TextColor = System.Drawing.Color.Black,
+                    FontSize = 16,
                     HeightRequest = RowHeight,
                     VerticalTextAlignment = TextAlignment.Center
                 });
+
+                SuggestionsStackLayout.Children.Add(new BoxView
+                {
+                    HeightRequest = 1,
+                    BackgroundColor = Color.LightGray,
+                    HorizontalOptions = LayoutOptions.Fill
+                });
             }
+
 
             if (SuggestionWrapper.IsVisible)
             {
@@ -333,7 +368,7 @@ namespace EntryAutoComplete.CustomControl
         {
             var listHeight = GetSuggestionsListHeight();
             SuggestionWrapper.HeightRequest = listHeight;
-            Container.HeightRequest = listHeight + SearchEntryLayout.Height;
+            Container.HeightRequest = listHeight;
             Container.ForceLayout();
         }
     }
