@@ -1,148 +1,134 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using EntryAutoComplete.Annotations;
+using EntryAutoComplete.CustomControl;
 
 namespace EntryAutoComplete.ViewModels
 {
     public class MainPageViewModel : INotifyPropertyChanged
     {
         private string _searchCountry = string.Empty;
+        private bool _customSearchFunctionSwitchIsToggled;
+        private SearchMode _searchMode = SearchMode.Contains;
+
         public string SearchCountry
         {
-            get { return _searchCountry; }
+            get => _searchCountry;
             set
             {
                 _searchCountry = value;
                 OnPropertyChanged();
-                FilterCountries();
             }
         }
 
-        private List<string> _countries;
-        public List<string> Countries
+        public List<string> Countries { get; } = new List<string>
         {
-            get { return _countries; }
+            "African Union",
+            "Andorra",
+            "Armenia",
+            "Austria",
+            "Bahamas",
+            "Barbados",
+            "Belarus",
+            "Belgium",
+            "Benin",
+            "Bolivia",
+            "Bosnia and Herzegovina",
+            "Botswana",
+            "Brazil",
+            "Bulgaria",
+            "Burkina Faso",
+            "Cameroon",
+            "Canada",
+            "Chad",
+            "Chile",
+            "China",
+            "Colombia",
+            "Congo",
+            "Czech Republic",
+            "Denmark",
+            "Egypt",
+            "England",
+            "Estonia",
+            "Finland",
+            "Flag Of Europe",
+            "France",
+            "Gabon",
+            "Germany",
+            "Germana",
+            "Germanu1",
+            "Germanu2",
+            "Germanu3",
+            "Germanu4",
+            "Germanu5",
+            "Germanu6",
+            "Germanu7",
+            "Germanu8",
+            "Germanu9",
+            "Germanu10",
+            "Germanu11",
+            "Great Britain",
+            "Hungary",
+            "Iceland",
+            "Iran",
+            "Ireland",
+            "Italy",
+            "Jamaica",
+            "Kuwait",
+            "Latvia",
+            "Liberia",
+            "Lithuania",
+            "Macedonia",
+            "Mali",
+            "Netherlands",
+            "New Zealand",
+            "Norway",
+            "Philippines",
+            "Poland",
+            "Portugal",
+            "Romania",
+            "Russian Federation",
+            "Slovakia",
+            "Slovenia",
+            "Spain",
+            "Sweden",
+            "Switzerland",
+            "Togo",
+            "Turkey",
+            "Ukraine",
+            "USA",
+            "Wales"
+        };
+
+        public SearchMode SearchMode
+        {
+            get => _searchMode;
             set
             {
-                _countries = value;
+                _searchMode = value;
                 OnPropertyChanged();
             }
         }
 
-        private List<string> _countriesFilter;
-        public List<string> CountriesFilter
+        public bool CustomSearchFunctionSwitchIsToggled
         {
-            get { return _countriesFilter; }
+            get => _customSearchFunctionSwitchIsToggled;
             set
             {
-                _countriesFilter = value; 
+                _customSearchFunctionSwitchIsToggled = value;
                 OnPropertyChanged();
+                UpdateCustomSearchFunction();
             }
         }
 
-        public MainPageViewModel()
+        private void UpdateCustomSearchFunction()
         {
-            Countries = new List<string>()
-            {
-                "African Union",
-                "Andorra",
-                "Armenia",
-                "Austria",
-                "Bahamas",
-                "Barbados",
-                "Belarus",
-                "Belgium",
-                "Benin",
-                "Bolivia",
-                "Bosnia and Herzegovina",
-                "Botswana",
-                "Brazil",
-                "Bulgaria",
-                "Burkina Faso",
-                "Cameroon",
-                "Canada",
-                "Chad",
-                "Chile",
-                "China",
-                "Colombia",
-                "Congo",
-                "Czech Republic",
-                "Denmark",
-                "Egypt",
-                "England",
-                "Estonia",
-                "Finland",
-                "Flag Of Europe",
-                "France",
-                "Gabon",
-                "Germany",
-                "Germana",
-                "Germanu1",
-                "Germanu2",
-                "Germanu3",
-                "Germanu4",
-                "Germanu5",
-                "Germanu6",
-                "Germanu7",
-                "Germanu8",
-                "Germanu9",
-                "Germanu10",
-                "Germanu11",
-                "Great Britain",
-                "Hungary",
-                "Iceland",
-                "Iran",
-                "Ireland",
-                "Italy",
-                "Jamaica",
-                "Kuwait",
-                "Latvia",
-                "Liberia",
-                "Lithuania",
-                "Macedonia",
-                "Mali",
-                "Netherlands",
-                "New Zealand",
-                "Norway",
-                "Philippines",
-                "Poland",
-                "Portugal",
-                "Romania",
-                "Russian Federation",
-                "Slovakia",
-                "Slovenia",
-                "Spain",
-                "Sweden",
-                "Switzerland",
-                "Togo",
-                "Turkey",
-                "Ukraine",
-                "USA",
-                "Wales"
-            };
-
-            CountriesFilter = new List<string>(Countries);
-        }
-
-        private void FilterCountries()
-        {
-            if (Countries != null)
-            {
-                if (string.IsNullOrEmpty(_searchCountry))
-                {
-                    CountriesFilter = new List<string>(Countries);
-                }
-
-                else
-                {
-                    var filterCountries = Countries.Where(x =>
-                        x.ToLower().Equals(_searchCountry.ToLower()) || x.ToLower().Contains(_searchCountry.ToLower()));
-
-                    CountriesFilter = new List<string>(filterCountries);
-                } 
-            }
+            SearchMode = CustomSearchFunctionSwitchIsToggled 
+                ? SearchMode.Using((text, obj) => obj.ToString().Length % 2 == 0 && obj.ToString().ToLower().Contains(text.ToLower()))
+                : SearchMode.Contains;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

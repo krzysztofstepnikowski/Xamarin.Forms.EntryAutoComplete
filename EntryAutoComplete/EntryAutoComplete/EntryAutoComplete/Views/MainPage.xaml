@@ -11,27 +11,24 @@
     </ContentPage.BindingContext>
 
     <StackLayout>
-        <!-- Place new controls here -->
         <StackLayout Orientation="Vertical">
             <StackLayout Orientation="Horizontal">
                 <Label>Show clear button</Label>
-                <Switch x:Name="ClearButtonVisibilitySwitch" IsToggled="True"></Switch>
+                <Switch x:Name="ClearButtonVisibilitySwitch" IsToggled="True"/>
+            </StackLayout>
+            <StackLayout Orientation="Horizontal">
+                <Label>Look for items with even number of characters (custom search function)</Label>
+                <Switch IsToggled="{Binding CustomSearchFunctionSwitchIsToggled}"/>
             </StackLayout>
         </StackLayout>
         <customControl:EntryAutoComplete
             VerticalOptions="CenterAndExpand"
             Placeholder="Enter country..." 
-            ItemsSource="{Binding CountriesFilter}"
+            ItemsSource="{Binding Countries}"
             SearchText="{Binding SearchCountry}"
-            SearchType="StartsWith"
+            SearchMode="{Binding SearchMode}"
             MaximumVisibleElements="5"
             IsClearButtonVisible="{Binding Path=IsToggled, Source={x:Reference Name=ClearButtonVisibilitySwitch}}"/>
-      
-<!--        <customControl:EntryAutoComplete -->
-<!--            Placeholder="Enter country..."-->
-<!--            ItemsSource="{Binding CountriesFilter}"-->
-<!--            SearchText="{Binding SearchCountry}"-->
-<!--            MinimumPrefixCharacter="3"/>-->
     </StackLayout>
 
 </ContentPage>
