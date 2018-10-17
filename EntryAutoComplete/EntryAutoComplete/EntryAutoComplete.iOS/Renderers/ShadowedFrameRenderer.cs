@@ -1,12 +1,12 @@
-﻿using System.ComponentModel;
-using CoreGraphics;
+﻿using CoreGraphics;
 using EntryAutoComplete.CustomControl;
 using EntryAutoComplete.iOS.Renderers;
 using UIKit;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.iOS;
 
-[assembly:ExportRenderer(typeof(ShadowedFrame), typeof(ShadowedFrameRenderer))]
+[assembly: ExportRenderer(typeof(ShadowedFrame), typeof(ShadowedFrameRenderer))]
+
 namespace EntryAutoComplete.iOS.Renderers
 {
     public class ShadowedFrameRenderer : FrameRenderer
@@ -26,6 +26,5 @@ namespace EntryAutoComplete.iOS.Renderers
             Layer.ShadowPath = UIBezierPath.FromRect(Layer.Bounds).CGPath;
             Layer.MasksToBounds = false;
         }
-
     }
 }
