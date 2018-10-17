@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using Xamarin.Forms;
 
@@ -374,7 +373,7 @@ namespace EntryAutoComplete.CustomControl
         {
             var listHeight = GetSuggestionsListHeight();
             SuggestionWrapper.HeightRequest = listHeight;
-            Container.HeightRequest = listHeight;
+            Container.HeightRequest = SuggestionsStackLayout.Children.Count>4 ? listHeight + SearchEntryLayout.Height : listHeight;
             Container.ForceLayout();
         }
     }
