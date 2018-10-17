@@ -10,11 +10,14 @@ namespace EntryAutoComplete.iOS.Renderers
 {
     public class BorderlessEntryRenderer : EntryRenderer
     {
-        protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+        protected override void OnElementChanged(ElementChangedEventArgs<Entry> e)
         {
-            base.OnElementPropertyChanged(sender, e);
-            Control.Layer.BorderWidth = 0;
-            Control.BorderStyle = UITextBorderStyle.None;
+            base.OnElementChanged(e);
+            if (e.OldElement == null)
+            {
+                Control.Layer.BorderWidth = 0;
+                Control.BorderStyle = UITextBorderStyle.None;
+            }
         }
     }
 }
