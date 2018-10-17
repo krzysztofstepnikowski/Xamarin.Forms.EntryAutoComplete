@@ -49,7 +49,7 @@ namespace EntryAutoComplete.CustomControl
                 propertyChanged: OnPlaceholderColorChanged);
 
         public static readonly BindableProperty ItemsSourceProperty =
-            BindableProperty.Create(nameof(ItemsSource), typeof(IEnumerable), typeof(EntryAutoComplete));
+            BindableProperty.Create(nameof(ItemsSource), typeof(IEnumerable), typeof(EntryAutoComplete), propertyChanged: OnItemSourceChanged);
 
         public static readonly BindableProperty IsClearButtonVisibleProperty =
             BindableProperty.Create(nameof(IsClearButtonVisible), typeof(bool), typeof(EntryAutoComplete), true,
@@ -62,13 +62,14 @@ namespace EntryAutoComplete.CustomControl
         {
             var autoCompleteView = bindable as EntryAutoComplete;
             var searchText = (string)newvalue;
-            autoCompleteView.SearchText = searchText;
-            autoCompleteView.SuggestionsStackLayout.Children.Clear();
-            foreach (var item in autoCompleteView.ItemsSource)
-            {
-                autoCompleteView.SuggestionsStackLayout.Children.Add(new Label { Text = item.ToString() });
-            }
-            autoCompleteView._originSuggestions = autoCompleteView.ItemsSource;
+            autoCompleteView.UpdateSuggestions(searchText);
+        }
+
+        private static void OnItemSourceChanged(BindableObject bindable, object oldvalue, object newvalue)
+        {
+            var autoCompleteView = bindable as EntryAutoComplete;
+            var items = (IEnumerable)newvalue;
+            autoCompleteView._originSuggestions = items;
         }
 
         private static void OnSearchTextColorChanged(BindableObject bindable, object oldvalue, object newvalue)
@@ -172,7 +173,7 @@ namespace EntryAutoComplete.CustomControl
         private BorderlessEntry SearchEntry;
         private Image ClearSearchEntryImage;
 
-        private IEnumerable _originSuggestions;
+        private IEnumerable _originSuggestions = Array.Empty<object>();
 
         public EntryAutoComplete()
         {
@@ -294,7 +295,6 @@ namespace EntryAutoComplete.CustomControl
         private void SearchEntry_TextChanged(object sender, TextChangedEventArgs e)
         {
             SearchText = e.NewTextValue;
-            UpdateSuggestions(e.NewTextValue);
         }
 
         private void SearchEntry_IconChanged(string searchText)
@@ -318,7 +318,6 @@ namespace EntryAutoComplete.CustomControl
             SuggestionWrapper.IsVisible = newSearchText.Length != 0 &&
                                           newSearchText.Length >= MinimumPrefixCharacter &&
                                           newSuggestions.Cast<object>().Count() != 0;
-            SuggestionWrapper.IsEnabled = newSuggestions.Cast<object>().Count() >= MaximumVisibleElements;
 
             SuggestionsStackLayout.Children.Clear();
             foreach (var item in newSuggestions)
@@ -330,13 +329,18 @@ namespace EntryAutoComplete.CustomControl
                     FontSize = 16,
                     HeightRequest = RowHeight,
                     VerticalTextAlignment = TextAlignment.Center,
-#pragma warning disable CS0618 // Type or member is obsolete
-                    GestureRecognizers = { new TapGestureRecognizer((s, e) =>
+                    GestureRecognizers =
                     {
-                        SearchEntry.Text = item.ToString();
-                        SuggestionWrapper.IsVisible = false;
-                    })}
-#pragma warning restore CS0618 // Type or member is obsolete
+                        new TapGestureRecognizer
+                        {
+                            Command = new Command(() =>
+                            {
+                                SearchEntry.Text = item.ToString();
+                                SuggestionWrapper.IsVisible = false;
+                            })
+                        }
+                    },
+
                 });
 
                 SuggestionsStackLayout.Children.Add(new BoxView
@@ -344,7 +348,7 @@ namespace EntryAutoComplete.CustomControl
                     HeightRequest = 1,
                     BackgroundColor = Color.LightGray,
                     HorizontalOptions = LayoutOptions.Fill
-                });
+                });                
             }
 
             if (SuggestionWrapper.IsVisible)
