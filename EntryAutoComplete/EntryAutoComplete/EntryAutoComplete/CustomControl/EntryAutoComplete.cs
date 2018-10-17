@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Xamarin.Forms;
 
@@ -200,7 +201,7 @@ namespace EntryAutoComplete.CustomControl
 
         private void InitSearchEntry()
         {
-            SearchEntry = new BorderlessEntry()
+            SearchEntry = new BorderlessEntry
             {
                 HorizontalOptions = LayoutOptions.Fill,
                 VerticalOptions = LayoutOptions.Fill
@@ -269,7 +270,6 @@ namespace EntryAutoComplete.CustomControl
                 Width = new GridLength(1, GridUnitType.Star)
             });
             SearchEntryLayout.RowDefinitions.Add(new RowDefinition { Height = 80 });
-
             SearchEntryLayout.Children.Add(ShadowedFrame, 0, 0);
 
 
@@ -298,6 +298,13 @@ namespace EntryAutoComplete.CustomControl
             UpdateSuggestions(e.NewTextValue);
         }
 
+        private void SearchEntry_IconChanged(string searchText)
+        {
+            ClearSearchEntryImage.Source = string.IsNullOrEmpty(searchText)
+                ? "baseline_search_black_24.png"
+                : "baseline_close_black_24.png";
+        }
+
         private void UpdateSuggestions(string newSearchText)
         {
             var newSuggestions = _originSuggestions;
@@ -323,7 +330,14 @@ namespace EntryAutoComplete.CustomControl
                     TextColor = System.Drawing.Color.Black,
                     FontSize = 16,
                     HeightRequest = RowHeight,
-                    VerticalTextAlignment = TextAlignment.Center
+                    VerticalTextAlignment = TextAlignment.Center,
+#pragma warning disable CS0618 // Type or member is obsolete
+                    GestureRecognizers = { new TapGestureRecognizer((s, e) =>
+                    {
+                        SearchEntry.Text = item.ToString();
+                        SuggestionWrapper.IsVisible = false;
+                    })}
+#pragma warning restore CS0618 // Type or member is obsolete
                 });
 
                 SuggestionsStackLayout.Children.Add(new BoxView
@@ -334,18 +348,10 @@ namespace EntryAutoComplete.CustomControl
                 });
             }
 
-
             if (SuggestionWrapper.IsVisible)
             {
                 UpdateLayout();
             }
-        }
-
-        private void SearchEntry_IconChanged(string searchText)
-        {
-            ClearSearchEntryImage.Source = string.IsNullOrEmpty(searchText)
-                ? "baseline_search_black_24.png"
-                : "baseline_close_black_24.png";
         }
 
         private IEnumerable FilterSuggestions(IEnumerable itemsSource, string searchText)
