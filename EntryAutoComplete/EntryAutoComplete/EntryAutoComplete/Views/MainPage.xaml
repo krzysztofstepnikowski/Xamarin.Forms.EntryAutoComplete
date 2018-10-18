@@ -4,6 +4,7 @@
              xmlns:customControl="clr-namespace:EntryAutoComplete.CustomControl;assembly=EntryAutoComplete"
              xmlns:viewModels="clr-namespace:EntryAutoComplete.ViewModels;assembly=EntryAutoComplete"
              x:Class="EntryAutoComplete.Views.MainPage"
+             BackgroundColor="Silver"
              Padding="20">
 
     <ContentPage.BindingContext>
