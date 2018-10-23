@@ -1,4 +1,4 @@
-# Xamarin.Forms.EntryAutoComplete! ![Build status](https://img.shields.io/badge/nuget-1.0-blue.svg)
+# Xamarin.Forms.EntryAutoComplete ![Build status](https://img.shields.io/badge/nuget-1.0-blue.svg)
 
 [Xamarin.Forms.EntryAutoComplete](https://github.com/krzysztofstepnikowski/Xamarin.Forms.EntryAutoComplete) is a custom control which functionality provides you with suggestions while typing. There are several modes of suggestions. The suggested text can be displayed in a drop-down list so that you can choose from different options.
 
