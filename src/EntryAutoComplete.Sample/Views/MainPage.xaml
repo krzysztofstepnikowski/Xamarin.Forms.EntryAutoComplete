@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:customControl="clr-namespace:EntryAutoComplete;assembly=EntryAutoComplete"
+             xmlns:viewModels="clr-namespace:EntryAutoComplete.Sample.ViewModels;assembly=EntryAutoComplete.Sample"
+             x:Class="EntryAutoComplete.Sample.Views.MainPage"
+             BackgroundColor="Silver"
+             Padding="20">
+
+    <ContentPage.BindingContext>
+        <viewModels:MainPageViewModel/>
+    </ContentPage.BindingContext>
+
+    <StackLayout>
+        <StackLayout Orientation="Vertical">
+            <StackLayout Orientation="Horizontal">
+                <Label>Show clear button</Label>
+                <Switch x:Name="ClearButtonVisibilitySwitch" IsToggled="True"/>
+            </StackLayout>
+            <StackLayout Orientation="Horizontal">
+                <Label>Look for items with even number of characters (custom search function)</Label>
+                <Switch IsToggled="{Binding CustomSearchFunctionSwitchIsToggled}"/>
+            </StackLayout>
+        </StackLayout>
+        <customControl:EntryAutoComplete
+            VerticalOptions="CenterAndExpand"
+            Placeholder="Enter country..." 
+            ItemsSource="{Binding Countries}"
+            SearchText="{Binding SearchCountry}"
+            SearchMode="{Binding SearchMode}"
+            MaximumVisibleElements="5"
+            IsClearButtonVisible="{Binding Path=IsToggled, Source={x:Reference Name=ClearButtonVisibilitySwitch}}"/>
+    </StackLayout>
+
+</ContentPage>
