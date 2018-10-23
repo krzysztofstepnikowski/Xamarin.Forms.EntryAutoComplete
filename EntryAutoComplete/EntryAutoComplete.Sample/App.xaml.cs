@@ -1,9 +1,9 @@
-﻿using EntryAutoComplete.Views;
+﻿using EntryAutoComplete.Sample.Views;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
 [assembly: XamlCompilation(XamlCompilationOptions.Compile)]
-namespace EntryAutoComplete
+namespace EntryAutoComplete.Sample
 {
     public partial class App : Application
     {

@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:customControl="clr-namespace:EntryAutoComplete.CustomControl;assembly=EntryAutoComplete"
-             xmlns:viewModels="clr-namespace:EntryAutoComplete.ViewModels;assembly=EntryAutoComplete"
-             x:Class="EntryAutoComplete.Views.MainPage"
+             xmlns:customControl="clr-namespace:EntryAutoComplete;assembly=EntryAutoComplete"
+             xmlns:viewModels="clr-namespace:EntryAutoComplete.Sample.ViewModels;assembly=EntryAutoComplete.Sample"
+             x:Class="EntryAutoComplete.Sample.Views.MainPage"
              BackgroundColor="Silver"
              Padding="20">
 

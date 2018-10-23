@@ -26,7 +26,7 @@ namespace EntryAutoComplete.UWP
         public MainPage()
         {
             this.InitializeComponent();
-            LoadApplication(new EntryAutoComplete.App());
+            LoadApplication(new global::EntryAutoComplete.Sample.App());
         }
     }
 }

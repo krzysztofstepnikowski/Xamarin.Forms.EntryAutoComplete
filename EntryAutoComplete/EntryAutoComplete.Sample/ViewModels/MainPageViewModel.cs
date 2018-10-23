@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using EntryAutoComplete.Annotations;
-using EntryAutoComplete.CustomControl;
+using EntryAutoComplete;
 
-namespace EntryAutoComplete.ViewModels
+namespace EntryAutoComplete.Sample.ViewModels
 {
     public class MainPageViewModel : INotifyPropertyChanged
     {
@@ -58,18 +55,6 @@ namespace EntryAutoComplete.ViewModels
             "France",
             "Gabon",
             "Germany",
-            "Germana",
-            "Germanu1",
-            "Germanu2",
-            "Germanu3",
-            "Germanu4",
-            "Germanu5",
-            "Germanu6",
-            "Germanu7",
-            "Germanu8",
-            "Germanu9",
-            "Germanu10",
-            "Germanu11",
             "Great Britain",
             "Hungary",
             "Iceland",
@@ -133,7 +118,6 @@ namespace EntryAutoComplete.ViewModels
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

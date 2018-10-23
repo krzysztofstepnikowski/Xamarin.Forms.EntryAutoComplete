@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel;
-using EntryAutoComplete.CustomControl;
+using EntryAutoComplete;
 using EntryAutoComplete.iOS.Renderers;
 using UIKit;
 using Xamarin.Forms;

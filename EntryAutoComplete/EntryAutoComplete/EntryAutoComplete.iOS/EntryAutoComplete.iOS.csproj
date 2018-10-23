@@ -154,12 +154,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\EntryAutoComplete\EntryAutoComplete.csproj">
-      <Project>{830543D8-4548-4107-81DB-511C3F9EC5BD}</Project>
-      <Name>EntryAutoComplete</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <BundleResource Include="Resources\baseline_search_black_24%403x.png" />
   </ItemGroup>
   <ItemGroup>
@@ -176,5 +170,15 @@
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\baseline_close_black_24%402x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\EntryAutoComplete.Sample\EntryAutoComplete.Sample.csproj">
+      <Project>{71a1c6b8-c399-4aeb-95b3-40c2638f4854}</Project>
+      <Name>EntryAutoComplete.Sample</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EntryAutoComplete\EntryAutoComplete.csproj">
+      <Project>{d53a14f2-2ebd-45ab-8e44-517b1ee6679b}</Project>
+      <Name>EntryAutoComplete</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

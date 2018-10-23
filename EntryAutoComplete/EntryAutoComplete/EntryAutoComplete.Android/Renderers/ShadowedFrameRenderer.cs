@@ -1,6 +1,6 @@
 ﻿using Android.Graphics;
 using Android.Support.V4.View;
-using EntryAutoComplete.CustomControl;
+using EntryAutoComplete;
 using EntryAutoComplete.Droid.Renderers;
 using Xamarin.Forms;
 using FrameRenderer = Xamarin.Forms.Platform.Android.AppCompat.FrameRenderer;

@@ -1,6 +1,6 @@
 ﻿using Xamarin.Forms;
 
-namespace EntryAutoComplete.Views
+namespace EntryAutoComplete.Sample.Views
 {
     public partial class MainPage : ContentPage
     {

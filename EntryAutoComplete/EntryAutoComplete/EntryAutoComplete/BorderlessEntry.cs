@@ -1,6 +1,6 @@
 ﻿using Xamarin.Forms;
 
-namespace EntryAutoComplete.CustomControl
+namespace EntryAutoComplete
 {
     public class BorderlessEntry : Entry
     {

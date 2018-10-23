@@ -90,12 +90,6 @@
     <AndroidResource Include="Resources\drawable\baseline_close_black_24.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\EntryAutoComplete\EntryAutoComplete.csproj">
-      <Project>{830543D8-4548-4107-81DB-511C3F9EC5BD}</Project>
-      <Name>EntryAutoComplete</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <AndroidResource Include="Resources\drawable\baseline_search_black_24.png" />
   </ItemGroup>
   <ItemGroup>
@@ -121,6 +115,16 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable-xxxhdpi\baseline_close_black_24.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\EntryAutoComplete.Sample\EntryAutoComplete.Sample.csproj">
+      <Project>{71A1C6B8-C399-4AEB-95B3-40C2638F4854}</Project>
+      <Name>EntryAutoComplete.Sample</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EntryAutoComplete\EntryAutoComplete.csproj">
+      <Project>{D53A14F2-2EBD-45AB-8E44-517B1EE6679B}</Project>
+      <Name>EntryAutoComplete</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
 </Project>

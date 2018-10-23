@@ -1,4 +1,4 @@
-﻿using EntryAutoComplete.CustomControl;
+﻿using EntryAutoComplete;
 using EntryAutoComplete.Droid.Renderers;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android;
