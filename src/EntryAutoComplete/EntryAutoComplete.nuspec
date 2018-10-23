@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>EntryAutoComplete</id>
+    <version>1.0.0.0</version>
+    <title>EntryAutoComplete</title>
+    <authors>Krzysztof Stepnikowski, Bartlomiej Rogowski</authors>
+    <projectUrl>https://github.com/krzysztofstepnikowski/Xamarin.Forms.EntryAutoComplete</projectUrl>    
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>EntryAutoComplete custom control for Xamarin.Forms</description>    
+    <copyright>Copyright 2018</copyright>
+    <tags>autocomplete xamarin control ios android uwp</tags>
+    <dependencies>
+      <dependency id="Xamarin.Forms" version="3.1.0.697729" />
+    </dependencies>
+  </metadata>
+</package>
