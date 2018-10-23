@@ -1,13 +1,13 @@
 ﻿using Android.Graphics;
 using Android.Support.V4.View;
 using EntryAutoComplete;
-using EntryAutoComplete.Droid.Renderers;
+using EntryAutoComplete.Sample.Droid.Renderers;
 using Xamarin.Forms;
 using FrameRenderer = Xamarin.Forms.Platform.Android.AppCompat.FrameRenderer;
 
 [assembly: ExportRenderer(typeof(ShadowedFrame), typeof(ShadowedFrameRenderer))]
 
-namespace EntryAutoComplete.Droid.Renderers
+namespace EntryAutoComplete.Sample.Droid.Renderers
 {
     public class ShadowedFrameRenderer : FrameRenderer
     {

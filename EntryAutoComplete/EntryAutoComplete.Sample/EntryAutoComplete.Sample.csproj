@@ -8,6 +8,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EntryAutoComplete\EntryAutoComplete\EntryAutoComplete.csproj" />
+    <ProjectReference Include="..\EntryAutoComplete\EntryAutoComplete.csproj" />
   </ItemGroup>
 </Project>

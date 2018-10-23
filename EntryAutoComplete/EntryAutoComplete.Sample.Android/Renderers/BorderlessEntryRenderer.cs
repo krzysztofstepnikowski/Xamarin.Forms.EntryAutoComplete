@@ -1,13 +1,12 @@
-﻿using System.ComponentModel;
-using EntryAutoComplete;
-using EntryAutoComplete.iOS.Renderers;
-using UIKit;
+﻿using EntryAutoComplete;
+using EntryAutoComplete.Sample.Droid.Renderers;
 using Xamarin.Forms;
-using Xamarin.Forms.Platform.iOS;
+using Xamarin.Forms.Platform.Android;
 
 [assembly:ExportRenderer(typeof(BorderlessEntry), typeof(BorderlessEntryRenderer))]
-namespace EntryAutoComplete.iOS.Renderers
+namespace EntryAutoComplete.Sample.Droid.Renderers
 {
+#pragma warning disable CS0618 // Type or member is obsolete
     public class BorderlessEntryRenderer : EntryRenderer
     {
         protected override void OnElementChanged(ElementChangedEventArgs<Entry> e)
@@ -15,9 +14,9 @@ namespace EntryAutoComplete.iOS.Renderers
             base.OnElementChanged(e);
             if (e.OldElement == null)
             {
-                Control.Layer.BorderWidth = 0;
-                Control.BorderStyle = UITextBorderStyle.None;
+                Control.Background = null;
             }
         }
     }
+#pragma warning restore CS0618 // Type or member is obsolete
 }

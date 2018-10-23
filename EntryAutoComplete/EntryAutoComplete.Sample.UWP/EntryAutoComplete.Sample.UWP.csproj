@@ -7,8 +7,8 @@
     <ProjectGuid>{A8CDB6C9-6DB4-4B4D-BADC-8FF7CE0A3DAD}</ProjectGuid>
     <OutputType>AppContainerExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>EntryAutoComplete.UWP</RootNamespace>
-    <AssemblyName>EntryAutoComplete.UWP</AssemblyName>
+    <RootNamespace>EntryAutoComplete.Sample.UWP</RootNamespace>
+    <AssemblyName>EntryAutoComplete.Sample.UWP</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.17134.0</TargetPlatformVersion>
@@ -137,7 +137,7 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\EntryAutoComplete.Sample\EntryAutoComplete.Sample.csproj">
+    <ProjectReference Include="..\EntryAutoComplete.Sample\EntryAutoComplete.Sample.csproj">
       <Project>{71a1c6b8-c399-4aeb-95b3-40c2638f4854}</Project>
       <Name>EntryAutoComplete.Sample</Name>
     </ProjectReference>

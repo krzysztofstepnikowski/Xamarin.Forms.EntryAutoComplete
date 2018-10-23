@@ -9,9 +9,9 @@
     <ProjectTypeGuids>{FEACFBD2-3405-455C-9665-78FE426C6842};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <TemplateGuid>{6143fdea-f3c2-4a09-aafa-6e230626515e}</TemplateGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>EntryAutoComplete.iOS</RootNamespace>
+    <RootNamespace>EntryAutoComplete.Sample.iOS</RootNamespace>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
-    <AssemblyName>EntryAutoComplete.iOS</AssemblyName>
+    <AssemblyName>EntryAutoComplete.Sample.iOS</AssemblyName>
     <MtouchHttpClientHandler>NSUrlSessionHandler</MtouchHttpClientHandler>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
@@ -172,7 +172,7 @@
     <BundleResource Include="Resources\baseline_close_black_24%402x.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\EntryAutoComplete.Sample\EntryAutoComplete.Sample.csproj">
+    <ProjectReference Include="..\EntryAutoComplete.Sample\EntryAutoComplete.Sample.csproj">
       <Project>{71a1c6b8-c399-4aeb-95b3-40c2638f4854}</Project>
       <Name>EntryAutoComplete.Sample</Name>
     </ProjectReference>

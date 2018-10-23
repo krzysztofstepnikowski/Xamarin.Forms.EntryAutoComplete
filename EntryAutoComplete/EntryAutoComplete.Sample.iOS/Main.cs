@@ -5,7 +5,7 @@ using System.Linq;
 using Foundation;
 using UIKit;
 
-namespace EntryAutoComplete.iOS
+namespace EntryAutoComplete.Sample.iOS
 {
     public class Application
     {

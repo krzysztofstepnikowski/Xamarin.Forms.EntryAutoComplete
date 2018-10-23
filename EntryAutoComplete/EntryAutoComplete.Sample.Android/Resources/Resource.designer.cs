@@ -9,9 +9,9 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: global::Android.Runtime.ResourceDesignerAttribute("EntryAutoComplete.Droid.Resource", IsApplication=true)]
+[assembly: global::Android.Runtime.ResourceDesignerAttribute("EntryAutoComplete.Sample.Droid.Resource", IsApplication=true)]
 
-namespace EntryAutoComplete.Droid
+namespace EntryAutoComplete.Sample.Droid
 {
 	
 	
@@ -26,7 +26,7 @@ namespace EntryAutoComplete.Droid
 		
 		public static void UpdateIdValues()
 		{
-			global::Xamarin.Forms.Platform.Android.Resource.Attribute.actionBarSize = global::EntryAutoComplete.Droid.Resource.Attribute.actionBarSize;
+			global::Xamarin.Forms.Platform.Android.Resource.Attribute.actionBarSize = global::EntryAutoComplete.Sample.Droid.Resource.Attribute.actionBarSize;
 		}
 		
 		public partial class Animation
