@@ -9,7 +9,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>EntryAutoComplete custom control for Xamarin.Forms</description>    
     <copyright>Copyright 2018</copyright>
-    <tags>autocomplete xamarin control ios android uwp</tags>
+    <tags>autocomplete xamarin control ios android uwp autocomplete suggestion search filter</tags>
     <dependencies>
       <dependency id="Xamarin.Forms" version="3.1.0.697729" />
     </dependencies>
