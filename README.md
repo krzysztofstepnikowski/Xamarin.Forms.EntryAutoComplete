@@ -31,7 +31,7 @@
 ## Installation
 Available as a **[NuGet package](https://www.nuget.org/packages/Xamarin.Forms.EntryAutoComplete/1.0.0)**. 
 ```
-Install-Package Xamarin.Forms.EntryAutoComplete
+Install-Package Xamarin.Forms.EntryAutoComplete -Version 1.0.0
 ```
 
 ## Usage
