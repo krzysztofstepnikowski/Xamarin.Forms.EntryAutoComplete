@@ -21,7 +21,7 @@
 
 #### iOS
 
-![demo](https://github.com/krzysztofstepnikowski/Xamarin.Forms.EntryAutoComplete/blob/master/screenshots/iPhone.gif?raw=true)
+![demo](https://github.com/krzysztofstepnikowski/Xamarin.Forms.EntryAutoComplete/blob/master/screenshots/iOS.gif?raw=true)
 
 ## Requirements
 
