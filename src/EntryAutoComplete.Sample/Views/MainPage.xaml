@@ -3,6 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:customControl="clr-namespace:EntryAutoComplete;assembly=EntryAutoComplete"
              xmlns:viewModels="clr-namespace:EntryAutoComplete.Sample.ViewModels;assembly=EntryAutoComplete.Sample"
+             xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core" 
+             ios:Page.UseSafeArea="true"
              x:Class="EntryAutoComplete.Sample.Views.MainPage"
              BackgroundColor="Silver"
              Padding="20">
