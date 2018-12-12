@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Linq;
+using Rg.Plugins.Popup.Pages;
+using Rg.Plugins.Popup.Services;
 using Xamarin.Forms;
 
 namespace EntryAutoComplete
@@ -148,6 +150,7 @@ namespace EntryAutoComplete
             }
         }
 
+        private PopupPage Popup;
         private Grid Container;
         private ShadowedFrame ShadowedFrame;
         private Grid SearchEntryLayout;
@@ -165,7 +168,7 @@ namespace EntryAutoComplete
             InitClearImage();
             InitSuggestionsListView();
             InitSuggestionsScrollView();
-
+            InitPopup();
             PlaceControlsInGrid();
 
             Content = Container;
@@ -214,9 +217,9 @@ namespace EntryAutoComplete
             SuggestionsStackLayout = new StackLayout
             {
                 BackgroundColor = Color.White,
-                VerticalOptions = LayoutOptions.End,
+                VerticalOptions = LayoutOptions.CenterAndExpand,
                 Spacing = 0,
-                Padding = new Thickness(20,0)
+                Padding = new Thickness(20, 0)
             };
         }
 
@@ -225,12 +228,22 @@ namespace EntryAutoComplete
             SuggestionWrapper = new ScrollView
             {
                 Orientation = ScrollOrientation.Vertical,
-                BackgroundColor = Color.White,
+                BackgroundColor = Color.Transparent,
                 Content = new ShadowedFrame
                 {
                     Content = SuggestionsStackLayout
                 },
+                Padding = new Thickness(0),
                 IsVisible = false
+            };
+        }
+
+        private void InitPopup()
+        {
+            Popup = new PopupPage
+            {
+                Content = SuggestionWrapper,
+                Padding = new Thickness(20)
             };
         }
 
@@ -256,7 +269,7 @@ namespace EntryAutoComplete
             SearchEntryLayout.Children.Add(ShadowedFrame, 0, 0);
 
 
-            Container.Children.Add(SuggestionWrapper);
+            Container.Children.Add(Popup.Content);
             Container.Children.Add(SearchEntryLayout, 0, 1);
         }
 
@@ -267,7 +280,7 @@ namespace EntryAutoComplete
             {
                 Width = new GridLength(1, GridUnitType.Star)
             });
-            searchEntryLayout.RowDefinitions.Add(new RowDefinition {Height = 50});
+            searchEntryLayout.RowDefinitions.Add(new RowDefinition { Height = 50 });
 
             searchEntryLayout.Children.Add(SearchEntry, 0, 0);
             searchEntryLayout.Children.Add(ClearSearchEntryImage, 0, 0);
@@ -296,6 +309,11 @@ namespace EntryAutoComplete
             if (newSearchText.Length >= MinimumPrefixCharacter)
             {
                 newSuggestions = FilterSuggestions(newSuggestions, newSearchText);
+
+                if (PopupNavigation.Instance.PopupStack.Count > 0)
+                {
+                    PopupNavigation.Instance.PopAsync();
+                }
             }
 
             SuggestionWrapper.IsVisible = newSearchText.Length != 0 &&
@@ -320,10 +338,10 @@ namespace EntryAutoComplete
                             {
                                 SearchEntry.Text = item.ToString();
                                 SuggestionWrapper.IsVisible = false;
+                                PopupNavigation.Instance.PopAsync();
                             })
                         }
-                    },
-
+                    }
                 });
 
                 SuggestionsStackLayout.Children.Add(new BoxView
@@ -331,12 +349,13 @@ namespace EntryAutoComplete
                     HeightRequest = 1,
                     BackgroundColor = Color.LightGray,
                     HorizontalOptions = LayoutOptions.Fill
-                });                
+                });
             }
 
             if (SuggestionWrapper.IsVisible)
             {
                 UpdateLayout();
+                PopupNavigation.Instance.PushAsync(Popup);
             }
         }
 
@@ -359,8 +378,8 @@ namespace EntryAutoComplete
         private void UpdateLayout()
         {
             var listHeight = GetSuggestionsListHeight();
-            SuggestionWrapper.HeightRequest = listHeight;
-            Container.HeightRequest = SuggestionsStackLayout.Children.Count>4 ? listHeight + SearchEntryLayout.Height : listHeight;
+            InitPopup();
+            Container.HeightRequest = listHeight;
             Container.ForceLayout();
         }
     }

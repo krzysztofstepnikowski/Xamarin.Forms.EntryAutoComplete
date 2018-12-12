@@ -31,6 +31,7 @@
             SearchText="{Binding SearchCountry}"
             SearchMode="{Binding SearchMode}"
             MaximumVisibleElements="5"
+            MinimumPrefixCharacter="2"
             IsClearButtonVisible="{Binding Path=IsToggled, Source={x:Reference Name=ClearButtonVisibilitySwitch}}"/>
     </StackLayout>
 
